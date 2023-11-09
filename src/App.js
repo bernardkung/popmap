@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import * as d3 from "d3"
+import BarChart from './components/BarChart'
+import { useState, useEffect } from 'react'
 
 function App() {
+
+  const [dataset, setDataset] = useState()
+  const [loading, setLoading] = useState(true)
+
+  // On Load
+  useEffect(()=>{
+    Promise.all([
+      d3.csv(
+        "https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/7_OneCatOneNum_header.csv"
+      )
+    ])
+    .then((dataset)=>{
+      setDataset(dataset[0])
+      setLoading(false)
+    })
+    return () => undefined
+  }, [])
+
+  useEffect(()=>{
+    console.log("on state, data", dataset)
+    console.log("on state, loading", loading)
+  }, [dataset])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div class="container">
+      { loading && <div>loading</div> }
+      { !loading && <BarChart dataset={dataset} loading={loading} /> }
     </div>
-  );
+  )
 }
+
 
 export default App;
