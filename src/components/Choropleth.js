@@ -12,6 +12,10 @@ const Choropleth = ({ geodata, popdata, loading }) => {
   // console.log(" chart, geodata", geodata)
   // console.log(" chart, popdata", popdata)
 
+  // set the dimensions and margins of the graph
+  const margin = { top: 30, right: 30, bottom: 70, left: 60 },
+    width = 460 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
 
   useEffect(()=>{
     // const svg = d3.create("svg")
@@ -19,12 +23,25 @@ const Choropleth = ({ geodata, popdata, loading }) => {
     //   .attr("height", 610)
     //   .attr("viewBox", [0, 0, 975, 610])
     //   .attr("style", "max-width: 100%; height: auto;");
+    
+    // // append the svg object to the body of the page
+    // const svg = d3.select(ref.current)
+    //   .append("svg")
+    //   .attr("width", 975)
+    //   .attr("height", 610)
+    //   .attr("viewBox", [0, 0, 975, 610])
+    //   .attr("style", "max-width: 100%; height: auto;");
 
-    const svg = d3.select(ref.current)
-      .attr("width", 975)
-      .attr("height", 610)
-      .attr("viewBox", [0, 0, 975, 610])
-      .attr("style", "max-width: 100%; height: auto;");
+    
+    // append the svg object to the body of the page
+    const svg = d3
+    .select(ref.current)
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
     const color = d3.scaleQuantize([1, 10], d3.schemeBlues[9]);
     const path = d3.geoPath();
@@ -69,7 +86,7 @@ const Choropleth = ({ geodata, popdata, loading }) => {
   }, [ geodata, popdata ])
 
   
-  return ( <svg></svg> )
+  return ( <svg width={width} height={height} id="visualization" ref={ref}/> )
 }
 
 
