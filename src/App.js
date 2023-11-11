@@ -57,6 +57,13 @@ function App() {
         popdata={popdata} 
         loading={loading}
       /> }
+      { !loading && <Choropleth 
+        topodata={topodata} 
+        countydata={countydata} 
+        statedata={statedata} 
+        popdata={popdata} 
+        loading={loading}
+      /> }
     </div>
   )
 }

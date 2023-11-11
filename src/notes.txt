@@ -5,5 +5,8 @@ All of Connecticut was surveyed by Planning Regions-
   there's an announcement that these are County Equivalents,
   just need to check the cross-walking since the codes are different.
 
+  >> Swapped to a 2022 geo data
+
 scaleQuantize doesn't work because of the massive disparity in populations between counties.
   Need a way to flatten the spread, try binning into percentiles maybe?
+  >> Swapped to a ten quantile scale

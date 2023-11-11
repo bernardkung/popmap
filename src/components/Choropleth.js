@@ -15,7 +15,7 @@ const Choropleth = ({ topodata, popdata, loading }) => {
   // set the dimensions and margins of the graph
   const margin = { top: 30, right: 30, bottom: 70, left: 60 }
   const width = 1060 - margin.left - margin.right
-  const height = 1000 - margin.top - margin.bottom
+  const height = 800 - margin.top - margin.bottom
 
   useEffect(()=>{    
     // append the svg object to the body of the page
@@ -68,7 +68,7 @@ const Choropleth = ({ topodata, popdata, loading }) => {
     // Counties
     svg.append("g")
       .selectAll("path")
-      .data(topojson.feature(us, us.objects.counties).features)
+      .data(counties.features)
       .join("path")
         .attr("fill", d => color(valuemap.get(d.id)))
         .attr("d", path)
@@ -80,7 +80,7 @@ const Choropleth = ({ topodata, popdata, loading }) => {
 
     // States
     svg.append("path")
-        .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
+        .datum(statemesh)
         .attr("fill", "none")
         .attr("stroke", "white")
         .attr("stroke-linejoin", "round")

@@ -18,7 +18,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
   // set the dimensions and margins of the graph
   const margin = { top: 30, right: 30, bottom: 70, left: 60 }
   const width = 1060 - margin.left - margin.right
-  const height = 1000 - margin.top - margin.bottom
+  const height = 800 - margin.top - margin.bottom
 
   useEffect(()=>{ 
     
@@ -30,6 +30,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
     //     d.properties.NAMELSAD,
     //   )
     // })
+    
     // append the svg object to the body of the page
     const svg = d3
       .select(ref.current)
@@ -61,13 +62,18 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
     const states = topojson.feature(statedata, statedata.objects.cb_2022_us_state_20m)
     const statemap = new Map(states.features.map(d => [d.properties.STATEFP, d]))
 
+    // console.log(topojson.mesh(statedata, statedata.objects.cb_2022_us_state_20m, (a, b) => a !== b))
+    // console.log(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
+    // console.log("o", topojson.feature(us, us.objects.counties).features)
+    // console.log("n", topojson.feature(countydata, countydata.objects.cb_2022_us_county_20m).features)
 
     // The statemesh is just the internal borders between states, i.e.,
     // everything but the coastlines and country borders. This avoids an
     // additional stroke on the perimeter of the map, which would otherwise
     // mask intricate features such as islands and inlets. (Try removing
     // the last argument to topojson.mesh below to see the effect.)
-    const statemesh = topojson.mesh(us, us.objects.states, (a, b) => a !== b);
+    // const statemesh = topojson.mesh(us, us.objects.states, (a, b) => a !== b);
+    const statemesh = topojson.mesh(statedata, statedata.objects.cb_2022_us_state_20m, (a, b) => a !== b);
 
     // // Create a projection to adjust the size of the mesh
     // const projection = d3.geoAlbers()
@@ -81,19 +87,22 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
     // Counties
     svg.append("g")
       .selectAll("path")
-      .data(topojson.feature(us, us.objects.counties).features)
+      .data(counties.features)
       .join("path")
-        .attr("fill", d => color(valuemap.get(d.id)))
+        .attr("fill", d => {
+          // console.log(color(valuemap.get(d.properties.GEOID)))
+          return color(valuemap.get(d.properties.GEOID))
+        })
         .attr("d", path)
       .append("title")
         // .text(d => `${d.properties.name}, ${statemap.get(d.id.slice(0, 2)).properties.name}\n${valuemap.get(d.id)}%`);
       .text((d) => {
-        return `${d.properties.name}, ${statemap.get(d.id.slice(0, 2)).properties.name} (${d.id})\n${valuemap.get(d.id)}`
+        return `${d.properties.NAMELSAD}, ${d.properties.STATE_NAME} (${d.properties.GEOID})\n${valuemap.get(d.id)}`
       });
 
     // States
     svg.append("path")
-        .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
+        .datum(statemesh)
         .attr("fill", "none")
         .attr("stroke", "white")
         .attr("stroke-linejoin", "round")
