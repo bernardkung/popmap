@@ -42,7 +42,7 @@ function App() {
 
   return (
     <div class="container">
-      <p>Geopleth</p>
+      <p>2022</p>
       { loading && <div>loading</div> }
       {/* { !loading && <Choropleth 
         topodata={topodata} 
@@ -57,6 +57,7 @@ function App() {
         popdata={popdata} 
         loading={loading}
       /> }
+      <p>2018</p>
       { !loading && <Choropleth 
         topodata={topodata} 
         countydata={countydata} 
