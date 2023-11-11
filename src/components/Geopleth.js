@@ -3,21 +3,33 @@ import * as topojson from "topojson-client"
 import { useEffect, useRef } from "react";
 
 
-const Choropleth = ({ topodata, popdata, loading }) => {
+const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
   const ref = useRef()
   const us = topodata
 
-  // // Check that data was passed correctly
+
+  // Check that data was passed correctly
   // console.log(" chart, loading", loading)
   // console.log(" chart, geodata", geodata)
   // console.log(" chart, popdata", popdata)
+  // console.log(" chart, statedata", statedata)
+  // console.log(" chart, countydata", countydata)
 
   // set the dimensions and margins of the graph
   const margin = { top: 30, right: 30, bottom: 70, left: 60 }
   const width = 1060 - margin.left - margin.right
   const height = 1000 - margin.top - margin.bottom
 
-  useEffect(()=>{    
+  useEffect(()=>{ 
+    
+    // us.features.map(d => {
+    //   console.log(
+    //     d.properties.GEOID, 
+    //     d.properties.STATEFP, 
+    //     d.properties.COUNTYFP, 
+    //     d.properties.NAMELSAD,
+    //   )
+    // })
     // append the svg object to the body of the page
     const svg = d3
       .select(ref.current)
@@ -44,9 +56,10 @@ const Choropleth = ({ topodata, popdata, loading }) => {
     // five-digit FIPS identifier. The statemap lets us lookup the name of 
     // the state that contains a given county; a state’s two-digit identifier
     // corresponds to the first two digits of its counties’ identifiers.
-    const counties = topojson.feature(us, us.objects.counties);
-    const states = topojson.feature(us, us.objects.states);
-    const statemap = new Map(states.features.map(d => [d.id, d]));
+    
+    const counties = topojson.feature(countydata, countydata.objects.cb_2022_us_county_20m)
+    const states = topojson.feature(statedata, statedata.objects.cb_2022_us_state_20m)
+    const statemap = new Map(states.features.map(d => [d.properties.STATEFP, d]))
 
 
     // The statemesh is just the internal borders between states, i.e.,
@@ -86,11 +99,11 @@ const Choropleth = ({ topodata, popdata, loading }) => {
         .attr("stroke-linejoin", "round")
         .attr("d", path);
 
-  }, [ topodata, popdata ])
+  })
 
   
   return ( <svg width={width} height={height} id="visualization" ref={ref}/> )
 }
 
 
-export default Choropleth
+export default Geopleth
