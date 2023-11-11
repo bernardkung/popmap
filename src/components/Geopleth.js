@@ -1,11 +1,18 @@
 import * as d3 from "d3";
 import * as topojson from "topojson-client"
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 
 const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
+
+  
+  // set the dimensions and margins of the graph
+  const margin = { top: 30, right: 160, bottom: 70, left: 60 }
+  const width = 1060 - margin.left - margin.right
+  const height = 800 - margin.top - margin.bottom
+
   const ref = useRef()
-  const us = topodata
+  // const [ svgelement, setSvgelement ] = useState(<svg width={width} height={height} id="geopleth" ref={ref}/>)
 
 
   // Check that data was passed correctly
@@ -14,11 +21,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
   // console.log(" chart, popdata", popdata)
   // console.log(" chart, statedata", statedata)
   // console.log(" chart, countydata", countydata)
-
-  // set the dimensions and margins of the graph
-  const margin = { top: 30, right: 30, bottom: 70, left: 60 }
-  const width = 1060 - margin.left - margin.right
-  const height = 800 - margin.top - margin.bottom
 
   useEffect(()=>{ 
     
@@ -56,8 +58,10 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
     const counties = topojson.feature(countydata, countydata.objects.counties)
     const states = topojson.feature(statedata, statedata.objects.states)
     const statemap = new Map(states.features.map(d => [d.properties.STATEFP, d]))
-    const statemesh = topojson.mesh(statedata, statedata.objects.states, (a, b) => a !== b);
-    
+    const statemesh = topojson.mesh(statedata, statedata.objects.states, (a, b) => a !== b)
+    // Projection for scaling
+    const projection = d3.geoAlbers().fitSize([width, height], statemesh)
+
     // // Add a legend
     // svg.append("g")
     //     .attr("transform", "translate(610,20)")
@@ -72,7 +76,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
           // console.log(color(valuemap.get(d.properties.GEOID)))
           return color(valuemap.get(d.properties.GEOID))
         })
-        .attr("d", path)
+        .attr("d", d3.geoPath().projection(projection))
       .append("title")
       .text((d) => {
         return `${d.properties.NAMELSAD}, ${d.properties.STATE_NAME} (${d.properties.GEOID})\n${valuemap.get(d.id)}`
@@ -84,12 +88,13 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
         .attr("fill", "none")
         .attr("stroke", "white")
         .attr("stroke-linejoin", "round")
-        .attr("d", path);
+        .attr("d", d3.geoPath().projection(projection))
+        // .attr("d", path)
 
   })
 
-  
-  return ( <svg width={width} height={height} id="visualization" ref={ref}/> )
+  // return ( svgelement )
+  return ( <svg width={width} height={height} id="geopleth" ref={ref}/> )
 }
 
 
