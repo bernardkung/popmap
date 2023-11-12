@@ -19,3 +19,5 @@ Reworked the margins fixed the clipping,
 Connecticut is rendering correctly now with the swap to 2022 geodata
 
 Need to figure out how to get Alaska, Hawaii, and Puerto Rico into the viewbox
+Fixed Alaska and Hawaii by swapping to GeoAlbersUsa, 
+tried  a PR solution, doesn't quite work, doesn't seem worth to fix

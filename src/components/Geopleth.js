@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import * as topojson from "topojson-client"
 import { useState, useEffect, useRef } from "react";
+import geoAlbersUsaPr  from "./geoAlbersUsaPr";
 
 
 const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
@@ -60,7 +61,8 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
     const statemap = new Map(states.features.map(d => [d.properties.STATEFP, d]))
     const statemesh = topojson.mesh(statedata, statedata.objects.states, (a, b) => a !== b)
     // Projection for scaling
-    const projection = d3.geoAlbers().fitSize([
+    // const projection = geoAlbersUsaPr().scale(1300).translate([487.5, 305])
+    const projection = d3.geoAlbersUsa().fitSize([
         width - margin.left - margin.right, 
         height - margin.top - margin.bottom,
       ], statemesh)
@@ -81,12 +83,9 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
         })
         .attr("d", d3.geoPath().projection(projection))
       .append("title")
-      .text((d) => {
-        if (!valuemap.get(d.GEOID)) {
-          console.log(d.GEOID)
-        }
-        return `${d.properties.NAMELSAD}, ${d.properties.STATE_NAME} (${d.properties.GEOID})\n${d3.format(",.2r")(valuemap.get(d.properties.GEOID))}`
-      });
+      .text(
+        d => `${d.properties.NAMELSAD}, ${d.properties.STATE_NAME} (${d.properties.GEOID})\n${d3.format(",.2r")(valuemap.get(d.properties.GEOID))}`
+      );
 
     // States
     svg.append("path")
