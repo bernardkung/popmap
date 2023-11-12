@@ -13,8 +13,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
   const height = 800 - margin.top - margin.bottom
 
   const ref = useRef()
-  // const [ svgelement, setSvgelement ] = useState(<svg width={width} height={height} id="geopleth" ref={ref}/>)
-
 
   // Check that data was passed correctly
   // console.log(" chart, loading", loading)
@@ -25,14 +23,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
 
   useEffect(()=>{ 
     
-    // us.features.map(d => {
-    //   console.log(
-    //     d.properties.GEOID, 
-    //     d.properties.STATEFP, 
-    //     d.properties.COUNTYFP, 
-    //     d.properties.NAMELSAD,
-    //   )
-    // })
 
     // append the svg object to the body of the page
     const svg = d3
@@ -43,7 +33,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    // quantiLe scale
+    // quantiLe color scale
     const color = d3.scaleQuantile(
       popdata.filter(p => p.COUNTY != '000').map(p => parseInt(p.POPESTIMATE2022)),
       d3.schemeBlues[9]
@@ -51,28 +41,19 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
     const path = d3.geoPath();
     const valuemap = new Map(popdata.map(p => [p.STATE + p.COUNTY, p.POPESTIMATE2022]));
 
-    // The counties feature collection is all U.S. counties, each with a
-    // five-digit FIPS identifier. The statemap lets us lookup the name of 
-    // the state that contains a given county; a state’s two-digit identifier
-    // corresponds to the first two digits of its counties’ identifiers.
-    
+    // Define meshes & features 
     const counties = topojson.feature(countydata, countydata.objects.counties)
     const states = topojson.feature(statedata, statedata.objects.states)
     const statemap = new Map(states.features.map(d => [d.properties.STATEFP, d]))
     const statemesh = topojson.mesh(statedata, statedata.objects.states, (a, b) => a !== b)
     // Projection for scaling
-    // const projection = geoAlbersUsaPr().scale(1300).translate([487.5, 305])
     const projection = d3.geoAlbersUsa().fitSize([
         width - margin.left - margin.right, 
         height - margin.top - margin.bottom,
       ], statemesh)
 
-    // // Add a legend
-    // svg.append("g")
-    //     .attr("transform", "translate(610,20)")
-    //     .append(() => Legend(color, {title: "Unemployment rate (%)", width: 260}));
 
-    // Counties
+    // Draw Counties
     svg.append("g")
       .selectAll("path")
       .data(counties.features)
@@ -87,7 +68,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
         d => `${d.properties.NAMELSAD}, ${d.properties.STATE_NAME} (${d.properties.GEOID})\n${d3.format(",.2r")(valuemap.get(d.properties.GEOID))}`
       );
 
-    // States
+    // Draw States
     svg.append("path")
         .datum(statemesh)
         .attr("fill", "none")
