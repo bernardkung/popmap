@@ -60,7 +60,10 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
     const statemap = new Map(states.features.map(d => [d.properties.STATEFP, d]))
     const statemesh = topojson.mesh(statedata, statedata.objects.states, (a, b) => a !== b)
     // Projection for scaling
-    const projection = d3.geoAlbers().fitSize([width, height], statemesh)
+    const projection = d3.geoAlbers().fitSize([
+        width - margin.left - margin.right, 
+        height - margin.top - margin.bottom,
+      ], statemesh)
 
     // // Add a legend
     // svg.append("g")
@@ -79,7 +82,10 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
         .attr("d", d3.geoPath().projection(projection))
       .append("title")
       .text((d) => {
-        return `${d.properties.NAMELSAD}, ${d.properties.STATE_NAME} (${d.properties.GEOID})\n${valuemap.get(d.id)}`
+        if (!valuemap.get(d.GEOID)) {
+          console.log(d.GEOID)
+        }
+        return `${d.properties.NAMELSAD}, ${d.properties.STATE_NAME} (${d.properties.GEOID})\n${d3.format(",.2r")(valuemap.get(d.properties.GEOID))}`
       });
 
     // States
