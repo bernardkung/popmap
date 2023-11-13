@@ -64,6 +64,16 @@ const Choropleth = ({ topodata, popdata, loading }) => {
     // svg.append("g")
     //     .attr("transform", "translate(610,20)")
     //     .append(() => Legend(color, {title: "Unemployment rate (%)", width: 260}));
+    const mouseover = (event, d)=>{
+      console.log("mouseover", d)
+      console.log(this)
+      d3.select(this)
+        .transition()
+        .duration(200)
+        .style("fill", "pink")
+        .style("stroke", "black")
+      return
+    }
 
     // Counties
     svg.append("g")
@@ -72,11 +82,12 @@ const Choropleth = ({ topodata, popdata, loading }) => {
       .join("path")
         .attr("fill", d => color(valuemap.get(d.id)))
         .attr("d", path)
+        .on("mouseover", mouseover)
       .append("title")
         // .text(d => `${d.properties.name}, ${statemap.get(d.id.slice(0, 2)).properties.name}\n${valuemap.get(d.id)}%`);
       .text((d) => {
         return `${d.properties.name}, ${statemap.get(d.id.slice(0, 2)).properties.name} (${d.id})\n${valuemap.get(d.id)}`
-      });
+      })
 
     // States
     svg.append("path")

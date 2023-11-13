@@ -69,11 +69,9 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
     svg.append("path")
         .datum(statemesh)
         .attr("fill", "none")
-        .attr("stroke", "white")
+        .attr("stroke", "black")
         .attr("stroke-linejoin", "round")
         .attr("d", d3.geoPath().projection(projection))
-        // .on("mouseleave", mouseleave)
-        .on("mouseover", mouseover)
 
     // Draw Counties
     svg.append("g")
@@ -85,19 +83,15 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
         // .attr("fill", d => color(valuemap.get(d.properties.GEOID)))
         .attr("fill", "white")
         .attr("d", d3.geoPath().projection(projection))
+        .on("mouseover", mouseover)
+        .on("mouseleave", mouseleave)
+        .attr("data-fips", d=>d.properties.GEOID)
+        .attr("data-population", d=>valuemap.get(d.properties.GEOID))
       .append("title")
       .text(
         d => `${d.properties.NAMELSAD}, ${d.properties.STATE_NAME} (${d.properties.GEOID})\n${d3.format(",.2r")(valuemap.get(d.properties.GEOID))}`
       )
       .attr("class", "county")
-      .attr("data-fips", d=>d.properties.GEOID)
-      .attr("data-population", d=>valuemap.get(d.properties.GEOID))
-      .on("mouseleave", mouseleave)
-      // .on("mouseover", (datum, event)=>{
-      //   console.log("c", "datum", datum)
-      //   console.log("c", "event", event)
-      // })
-      .on("mouseover", mouseover)
   })
 
   // return ( svgelement )
