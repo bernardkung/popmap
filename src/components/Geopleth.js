@@ -50,9 +50,28 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocatio
         width - margin.left - margin.right, height - margin.top - margin.bottom,
       ], statemesh)
 
+    // Find neighboring counties
+    const getNeighbors = (targetGEOID)=>{
+      const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
+      const ids = counties.features.map(d => d.properties.GEOID)
+
+      const getcontig = id => {
+        var result = [];
+        var contig = neighbors[ids.indexOf(id)];
+        result = contig.map(i => ids[i]);
+        return result;
+      }
+
+      const neighborhood = counties.features.filter(d =>
+        getcontig(targetGEOID).includes(d.properties.GEOID)
+      )
       
+      return neighborhood
+    }
+  
     // Mouse functions
     const mouseOver = (e, d)=>{
+      console.log(e.target.getAttribute("ID"))
       d3.select(e.target)
         .transition()
         .duration(200)
@@ -66,33 +85,20 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocatio
         .style("fill", "white")
     }
 
-    const getNeighbors = (targetGEOID)=>{
-      const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
-      const ids = counties.features.map(d => d.properties.GEOID)
-      const getcontig = id => {
-        var result = [];
-        var contig = neighbors[ids.indexOf(id)];
-        result = contig.map(i => ids[i]);
-        return result;
-      }
-
-      const me = counties.features.filter(d => d.properties.GEOID == targetGEOID)
-      
-      const neighborhood = counties.features.filter(d =>
-        getcontig(targetGEOID).includes(d.properties.GEOID)
-      )
-      return neighborhood
-    }
-
     const mouseClick = (e, d)=>{
       const geoID = e.target.getAttribute("data-fips")
+      // console.log("click", e.target.getAttribute("ID"))
       // Setpop
       setPop(e.target.getAttribute("data-population"))
       setLocation(`${e.target.getAttribute("data-namelsad")}, ${e.target.getAttribute("data-statename")}`)
       // Get neighbors
       const neighbors = getNeighbors(geoID)
       // Set neighbor colors
-
+      neighbors.forEach(n=>{
+        console.log("Making #ID" + n.properties.GEOID + " green")
+        d3.select("#ID" + n.properties.GEOID)
+          .attr("fill", "green")
+      })
       // Set county to active
       console.log( 
         `${Boolean(e.target.getAttribute("active"))}=>${!Boolean(e.target.getAttribute("active"))}`
@@ -114,6 +120,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocatio
       .selectAll("path")
       .data(counties.features)
       .join("path")
+        .attr("ID", d=>"#ID" + d.properties.GEOID)
         .attr("class", "county")
         .attr("fill", "white")
         .attr("stroke", "#282c34")
