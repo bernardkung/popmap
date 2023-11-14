@@ -12,6 +12,8 @@ function App() {
   const [statedata, setStatedata] = useState()
   const [popdata, setPopdata] = useState()
   const [loading, setLoading] = useState(true)
+  const [location, setLocation] = useState()
+  const [pop, setPop] = useState(0)
 
   // On Load
   useEffect(()=>{
@@ -42,14 +44,16 @@ function App() {
 
   return (
     <div class="container">
-      <p>2022</p>
+      <div id="pop">{pop}</div>
+      <div id="location">{location}</div>
       { loading && <div>loading</div> }
       { !loading && <Geopleth 
         topodata={topodata} 
         countydata={countydata} 
         statedata={statedata} 
         popdata={popdata} 
-        loading={loading}
+        setPop={setPop}
+        setLocation={setLocation}
       /> }
     </div>
   )

@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import geoAlbersUsaPr  from "./geoAlbersUsaPr";
 
 
-const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
+const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocation }) => {
 
   // Check that data was passed correctly
   // console.log(" chart, loading", loading)
@@ -21,20 +21,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
   const width = 1060 - margin.left - margin.right
   const height = 800 - margin.top - margin.bottom
   
-  // Mouse functions
-  const mouseover = (event, d)=>{
-    console.log("mouseover", d)
-    console.log(this)
-    d3.select(this)
-      .transition()
-      .duration(200)
-      .style("fill", "pink")
-      .style("stroke", "black")
-    return
-  }
-  const mouseleave = (event, d)=>{
-    return
-  }
 
   useEffect(()=>{ 
     // append the svg object to the body of the page
@@ -61,9 +47,59 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
     const statemesh = topojson.mesh(statedata, statedata.objects.states, (a, b) => a !== b)
     // Projection for scaling
     const projection = d3.geoAlbersUsa().fitSize([
-        width - margin.left - margin.right, 
-        height - margin.top - margin.bottom,
+        width - margin.left - margin.right, height - margin.top - margin.bottom,
       ], statemesh)
+
+      
+    // Mouse functions
+    const mouseOver = (e, d)=>{
+      d3.select(e.target)
+        .transition()
+        .duration(200)
+        .style("fill", "pink")
+    }
+
+    const mouseLeave = (e, d)=>{
+      d3.select(e.target)
+        .transition()
+        .duration(200)
+        .style("fill", "white")
+    }
+
+    const getNeighbors = (targetGEOID)=>{
+      const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
+      const ids = counties.features.map(d => d.properties.GEOID)
+      const getcontig = id => {
+        var result = [];
+        var contig = neighbors[ids.indexOf(id)];
+        result = contig.map(i => ids[i]);
+        return result;
+      }
+
+      const me = counties.features.filter(d => d.properties.GEOID == targetGEOID)
+      
+      const neighborhood = counties.features.filter(d =>
+        getcontig(targetGEOID).includes(d.properties.GEOID)
+      )
+      return neighborhood
+    }
+
+    const mouseClick = (e, d)=>{
+      const geoID = e.target.getAttribute("data-fips")
+      // Setpop
+      setPop(e.target.getAttribute("data-population"))
+      setLocation(`${e.target.getAttribute("data-namelsad")}, ${e.target.getAttribute("data-statename")}`)
+      // Get neighbors
+      const neighbors = getNeighbors(geoID)
+      // Set neighbor colors
+
+      // Set county to active
+      console.log( 
+        `${Boolean(e.target.getAttribute("active"))}=>${!Boolean(e.target.getAttribute("active"))}`
+      )
+      d3.select(e.target)
+        .attr("active", !Boolean(e.target.getAttribute("active")))
+    }
 
     // Draw States
     svg.append("path")
@@ -77,21 +113,25 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, loading }) => {
     svg.append("g")
       .selectAll("path")
       .data(counties.features)
-      .enter()
-      .append("path")
-      // .join("path")
-        // .attr("fill", d => color(valuemap.get(d.properties.GEOID)))
+      .join("path")
+        .attr("class", "county")
         .attr("fill", "white")
+        .attr("stroke", "#282c34")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-width", 0.25)
         .attr("d", d3.geoPath().projection(projection))
-        .on("mouseover", mouseover)
-        .on("mouseleave", mouseleave)
+        .on("mouseover", mouseOver)
+        .on("mouseleave", mouseLeave)
+        .on("click", mouseClick)
         .attr("data-fips", d=>d.properties.GEOID)
         .attr("data-population", d=>valuemap.get(d.properties.GEOID))
+        .attr("data-namelsad", d=>d.properties.NAMELSAD)
+        .attr("data-statename", d=>d.properties.STATE_NAME)
+        .attr("active", false)
       .append("title")
       .text(
         d => `${d.properties.NAMELSAD}, ${d.properties.STATE_NAME} (${d.properties.GEOID})\n${d3.format(",.2r")(valuemap.get(d.properties.GEOID))}`
       )
-      .attr("class", "county")
   })
 
   // return ( svgelement )

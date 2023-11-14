@@ -30,11 +30,8 @@
 
 .container {
   background-color: #333338;
+  color: #fffffe;
+  text-align: center;
 }
 
 
-path{
-  /* fill: none; */
-  /* stroke: black; */
-  pointer-events:all;
-}
