@@ -14,23 +14,24 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocatio
   // console.log(" chart, statedata", statedata)
   // console.log(" chart, countydata", countydata)
   
-  const ref = useRef()
+  // const ref = useRef()
 
   // Set the dimensions and margins of the graph
-  const margin = { top: 30, right: 160, bottom: 70, left: 60 }
-  const width = 1060 - margin.left - margin.right
-  const height = 800 - margin.top - margin.bottom
+  const margin = { top: 0, right: 60, bottom: 60, left: 160 }
+  const width = 900
+  const height = 700
   
+  const svg = d3
+    .select(".container")
+    .append("svg")
+    .attr("id", "geopleth")
+    .attr("width", width )
+    .attr("height", height )
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
   useEffect(()=>{ 
     // append the svg object to the body of the page
-    const svg = d3
-      .select(ref.current)
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // quantiLe color scale
     const color = d3.scaleQuantile(
@@ -40,13 +41,17 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocatio
     const path = d3.geoPath();
     const valuemap = new Map(popdata.map(p => [p.STATE + p.COUNTY, p.POPESTIMATE2022]));
 
-    // Define meshes & features 
-    const counties = topojson.feature(countydata, countydata.objects.counties)
+    // // Define meshes & features 
+    // States meshes & features 
     const states = topojson.feature(statedata, statedata.objects.states)
     const statemap = new Map(states.features.map(d => [d.properties.STATEFP, d]))
     const statemesh = topojson.mesh(statedata, statedata.objects.states, (a, b) => a !== b)
-    // Projection for scaling
-    const projection = d3.geoAlbersUsa().fitSize([
+    const stateProjection = d3.geoAlbersUsa().fitSize([
+        width - margin.left - margin.right, height - margin.top - margin.bottom,
+      ], statemesh)
+    // Counties meshes & features 
+    const counties = topojson.feature(countydata, countydata.objects.counties)
+    const countyProjection = d3.geoAlbersUsa().fitSize([
         width - margin.left - margin.right, height - margin.top - margin.bottom,
       ], statemesh)
 
@@ -65,17 +70,17 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocatio
       const neighborhood = counties.features.filter(d =>
         getcontig(targetGEOID).includes(d.properties.GEOID)
       )
-      
+
       return neighborhood
     }
   
     // Mouse functions
     const mouseOver = (e, d)=>{
-      console.log(e.target.getAttribute("ID"))
       d3.select(e.target)
         .transition()
         .duration(200)
         .style("fill", "pink")
+      console.log("Active: " + e.target.getAttribute("active"))
     }
 
     const mouseLeave = (e, d)=>{
@@ -99,21 +104,8 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocatio
         d3.select("#ID" + n.properties.GEOID)
           .attr("fill", "green")
       })
-      // Set county to active
-      console.log( 
-        `${Boolean(e.target.getAttribute("active"))}=>${!Boolean(e.target.getAttribute("active"))}`
-      )
-      d3.select(e.target)
-        .attr("active", !Boolean(e.target.getAttribute("active")))
+      // Make the county active
     }
-
-    // Draw States
-    svg.append("path")
-        .datum(statemesh)
-        .attr("fill", "none")
-        .attr("stroke", "black")
-        .attr("stroke-linejoin", "round")
-        .attr("d", d3.geoPath().projection(projection))
 
     // Draw Counties
     svg.append("g")
@@ -125,8 +117,8 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocatio
         .attr("fill", "white")
         .attr("stroke", "#282c34")
         .attr("stroke-linejoin", "round")
-        .attr("stroke-width", 0.25)
-        .attr("d", d3.geoPath().projection(projection))
+        .attr("stroke-width", 0.15)
+        .attr("d", d3.geoPath().projection(countyProjection))
         .on("mouseover", mouseOver)
         .on("mouseleave", mouseLeave)
         .on("click", mouseClick)
@@ -135,14 +127,35 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocatio
         .attr("data-namelsad", d=>d.properties.NAMELSAD)
         .attr("data-statename", d=>d.properties.STATE_NAME)
         .attr("active", false)
+        .attr("neighbor", false)
       .append("title")
       .text(
         d => `${d.properties.NAMELSAD}, ${d.properties.STATE_NAME} (${d.properties.GEOID})\n${d3.format(",.2r")(valuemap.get(d.properties.GEOID))}`
       )
+
+      // Draw States
+      svg.append("g")
+        .selectAll("path")
+        .data(states.features)
+        .join("path")
+          .attr("fill", "none")
+          .attr("stroke", "#333338")
+          .attr("stroke-linejoin", "round")
+          .attr("stroke-width", 0.5)
+          .attr("d", d3.geoPath().projection(stateProjection))
+    
   })
 
   // return ( svgelement )
-  return ( <svg width={width} height={height} id="geopleth" ref={ref}/> )
+  // return ( 
+    // <svg 
+    //   id="geopleth" 
+    //   // ref={ref}
+    //   width={width + margin.left + margin.right} 
+    //   height={height + margin.top + margin.bottom} 
+    // /> 
+    // null
+  // )
   
 }
 
