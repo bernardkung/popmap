@@ -6,6 +6,8 @@ import geoAlbersUsaPr  from "./geoAlbersUsaPr";
 
 
 const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocation }) => {
+// Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
+
 
   // Set the dimensions and margins of the graph
   const margin = { top: 0, right: 60, bottom: 60, left: 160 }
@@ -27,16 +29,31 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   console.log(counties.features)
   return (
     <svg id="choropleth" style = {{ height: height, width: width}}>
+      {/* Counties */}
       {counties.features.map(d=>(
         <path 
-          // d={path}
+          d={
+            d3.geoPath().projection(d3.geoAlbersUsa())
+          }
           key={"ID" + d.properties.GEOID}
           fill="white"
           stroke="black"
           strokeLinejoin="round"
-          strokeWidth="0.25"
+          strokeWidth="0.15"
         />
       ))}
+      {/* States */}
+      {states.features.map(d=>(
+        <path
+          key={"ID" + d.properties.STATEFP}
+          fill="none"
+          stroke="black"
+          strokeLinejoin="round"
+          strokeWidth="0.5"
+        />
+      ))
+
+      }
     </svg>
   )
 

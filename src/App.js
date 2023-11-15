@@ -72,14 +72,14 @@ function App() {
         setPop={setPop}
         setLocation={setLocation}
       /> }
-      {/* { !loading && <Protopleth 
+      { !loading && <Protopleth 
         topodata={topodata} 
         countydata={countydata} 
         statedata={statedata} 
         popdata={popdata} 
         setPop={setPop}
         setLocation={setLocation}
-      /> } */}
+      /> }
     </div>
   )
 }
