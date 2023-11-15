@@ -64,14 +64,14 @@ function App() {
       <div id="pop">{pop}</div>
       <div id="location">{location}</div>
       {/* { loading && <div>loading</div> } */}
-      { !loading && <Geopleth 
+      {/* { !loading && <Geopleth 
         topodata={topodata} 
         countydata={countydata} 
         statedata={statedata} 
         popdata={popdata} 
         setPop={setPop}
         setLocation={setLocation}
-      /> }
+      /> } */}
       { !loading && <Protopleth 
         topodata={topodata} 
         countydata={countydata} 

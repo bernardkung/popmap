@@ -21,39 +21,49 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   const statemesh = topojson.mesh(statedata, statedata.objects.states, (a, b) => a !== b)
   const valuemap = new Map(popdata.map(p => [p.STATE + p.COUNTY, p.POPESTIMATE2022]));
   // Projection for scaling
-  const projection = d3.geoAlbersUsa().fitSize([
-      width - margin.left - margin.right, height - margin.top - margin.bottom,
-    ], statemesh)
-  const path = d3.geoPath().projection(projection)
+  // const projection = d3.geoAlbersUsa().fitSize([
+  //     width - margin.left - margin.right, height - margin.top - margin.bottom,
+  //   ], statemesh)
+  // const path = d3.geoPath().projection(projection)
 
-  console.log(counties.features)
+  // console.log("P", d3["geoAlbersUsa"])
+  // const projectionFx = d3['geoAlbersUsa']
+  // const projection = projectionFx().fitSize([
+  //   width - margin.left - margin.right, height - margin.top - margin.bottom,
+  // ])
+  // const pathGenerator = d3.geoPath(projection)
+  let projection = d3.geoAlbersUsa()
+  let geoGenerator = d3.geoPath()
+    .projection(projection)
+
+
   return (
-    <svg id="choropleth" style = {{ height: height, width: width}}>
+    <svg id="protopleth" style = {{ height: height, width: width}}>
+
       {/* Counties */}
-      {counties.features.map(d=>(
+      {counties.features.map(feature=>(
         <path 
-          d={
-            d3.geoPath().projection(d3.geoAlbersUsa())
-          }
-          key={"ID" + d.properties.GEOID}
+          d={geoGenerator(feature)}
+          key={"ID" + feature.properties.GEOID}
           fill="white"
           stroke="black"
           strokeLinejoin="round"
           strokeWidth="0.15"
         />
       ))}
+
       {/* States */}
-      {states.features.map(d=>(
+      {states.features.map(feature=>(
         <path
-          key={"ID" + d.properties.STATEFP}
+          d={geoGenerator(feature)}
+          key={"ID" + feature.properties.STATEFP}
           fill="none"
           stroke="black"
           strokeLinejoin="round"
           strokeWidth="0.5"
         />
-      ))
+      ))}
 
-      }
     </svg>
   )
 

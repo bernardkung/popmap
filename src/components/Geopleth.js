@@ -100,11 +100,12 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocatio
       const neighbors = getNeighbors(geoID)
       // Set neighbor colors
       neighbors.forEach(n=>{
-        console.log("Making #ID" + n.properties.GEOID + " green")
+        // console.log("Making #ID" + n.properties.GEOID + " green")
         d3.select("#ID" + n.properties.GEOID)
           .attr("fill", "green")
       })
       // Make the county active
+      console.log(e.target)
     }
 
     // Draw Counties
