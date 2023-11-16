@@ -43,21 +43,21 @@ function App() {
     // console.log("on state, popdata", popdata)
   // })
 
-  // useEffect(()=>{
-  //   if (!loading) {
-  //     setGeoplethdiv(
-  //       <Geopleth 
-  //         topodata={topodata} 
-  //         countydata={countydata} 
-  //         statedata={statedata} 
-  //         popdata={popdata} 
-  //         setPop={setPop}
-  //         setLocation={setLocation}
-  //         setGeoplethdiv={setGeoplethdiv}
-  //       />
-  //     )
-  //   }
-  // }, [loading])
+  useEffect(()=>{
+    if (!loading) {
+      setGeoplethdiv(
+        <Protopleth 
+          topodata={topodata} 
+          countydata={countydata} 
+          statedata={statedata} 
+          popdata={popdata} 
+          setPop={setPop}
+          setLocation={setLocation}
+          setGeoplethdiv={setGeoplethdiv}
+        />
+      )
+    }
+  }, [loading])
 
   return (
     <div class="container">
@@ -72,14 +72,15 @@ function App() {
         setPop={setPop}
         setLocation={setLocation}
       /> } */}
-      { !loading && <Protopleth 
+      {/* { !loading && <Protopleth 
         topodata={topodata} 
         countydata={countydata} 
         statedata={statedata} 
         popdata={popdata} 
         setPop={setPop}
         setLocation={setLocation}
-      /> }
+      /> } */}
+      { !loading && geoplethdiv }
     </div>
   )
 }
