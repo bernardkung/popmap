@@ -14,7 +14,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [location, setLocation] = useState("none")
   const [pop, setPop] = useState(0)
-  const [geoplethdiv, setGeoplethdiv] = useState(<div>no div</div>)
+  const [activeCounty, setActiveCounty] = useState()
+  const [neighbors, setNeighbors] = useState([])
 
   // On Load
   useEffect(()=>{
@@ -34,30 +35,6 @@ function App() {
     return () => undefined
   }, [])
 
-  // Check that data loaded
-  // useEffect(()=>{
-    // console.log("on state, loading", loading)
-    // console.log("on state, topodata", topodata)
-    // console.log("on state, countydata", countydata)
-    // console.log("on state, statedata", statedata)
-    // console.log("on state, popdata", popdata)
-  // })
-
-  useEffect(()=>{
-    if (!loading) {
-      setGeoplethdiv(
-        <Protopleth 
-          topodata={topodata} 
-          countydata={countydata} 
-          statedata={statedata} 
-          popdata={popdata} 
-          setPop={setPop}
-          setLocation={setLocation}
-          setGeoplethdiv={setGeoplethdiv}
-        />
-      )
-    }
-  }, [loading])
 
   return (
     <div class="container">
@@ -80,7 +57,22 @@ function App() {
         setPop={setPop}
         setLocation={setLocation}
       /> } */}
-      { !loading && geoplethdiv }
+      { !loading && <Protopleth 
+          topodata={topodata} 
+          countydata={countydata} 
+          statedata={statedata} 
+          popdata={popdata} 
+          setPop={setPop}
+          setLocation={setLocation}
+        /> }
+        {/* <Protopleth 
+          topodata={topodata} 
+          countydata={countydata} 
+          statedata={statedata} 
+          popdata={popdata} 
+          setPop={setPop}
+          setLocation={setLocation}
+        /> */}
     </div>
   )
 }

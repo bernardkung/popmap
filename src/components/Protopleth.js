@@ -17,8 +17,9 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
 
   // Dynamic dimensions
   const [viewsize, setViewsize] = useState([window.innerWidth, window.innerHeight])
-
-
+  const [activePath, setActivePath] = useState()
+  const [neighbors, setNeighbors] = useState([])
+  
   // Define features and projections
   const counties = topojson.feature(countydata, countydata.objects.counties)
   const states = topojson.feature(statedata, statedata.objects.states)
@@ -26,34 +27,44 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   const geoGenerator = d3.geoPath()
     .projection(projection)
 
-  const test_county = counties.features[0]
 
+  // Find neighboring counties
+  const getNeighbors = (targetGEOID)=>{
+    const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
+    const ids = counties.features.map(d => d.properties.GEOID)
 
-  const changeFill = ()=>{
-    console.log(d3.select(".target"))
-    d3.select(".target").style("fill", "green")
+    const getcontig = id => {
+      var result = [];
+      var contig = neighbors[ids.indexOf(id)];
+      result = contig.map(i => ids[i]);
+      return result;
+    }
+
+    const neighborhood = counties.features
+      .filter(d =>
+        getcontig(targetGEOID).includes(d.properties.GEOID)
+      )
+      .map(d=>"ID" + d.properties.GEOID)
+
+    return neighborhood
   }
-  const onClick = (e)=>{
-    console.log(e.target)
-    changeFill(e)
-  } 
 
-  // <path 
-  // d={geoGenerator(feature)}
-  // key={"ID" + feature.properties.GEOID}
-  // // className="pathPassive"
-  // style={{
-  //   fill: "white",
-  //   stroke: "black",
-  //   strokeLinejoin:"round",
-  //   strokeWidth:"0.15",
-  // }}
-  // // fill="white"
-  // // stroke="black"
-  // // strokeLinejoin="round"
-  // // strokeWidth="0.15"
-  // onClick={onClick}
-  const countyStyle = {
+  // Set styles for paths
+  const activeCountyStyle = {
+    fill: "green",
+    stroke: "black",
+    strokeLinejoin:"round",
+    strokeWidth:"0.15",
+  }
+
+  const neighborCountyStyle = {
+    fill: "blue",
+    stroke: "black",
+    strokeLinejoin:"round",
+    strokeWidth:"0.15",
+  }
+
+  const inactiveCountyStyle = {
     fill: "white",
     stroke: "black",
     strokeLinejoin:"round",
@@ -67,6 +78,32 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
     strokeWidth:"0.55",
   }
 
+  // Mouse functions
+  const onClick = (e)=>{
+    if (e.target.id == activePath) {
+      setActivePath(null)
+    } else {
+      setActivePath(e.target.id)
+    }
+  } 
+
+  const onMouseOver = (e)=>{
+    const geoid = e.target.getAttribute('data-geoid')
+    setNeighbors(getNeighbors(geoid))
+    // const neighbors = getNeighbors(geoid)
+    console.log("New neighbors:", neighbors)
+  }
+
+  // Determine which style to use
+  const setStyle = (id)=>{
+    if (id==activePath) {
+      return activeCountyStyle
+    } else if (id in neighbors) {
+      console.log("N", id, activePath)
+      return neighborCountyStyle
+    }
+    return inactiveCountyStyle
+  }
 
   return (
     <svg id="protopleth" style = {{ width: width, height:height }}>
@@ -75,8 +112,12 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
       {counties.features.map(feature=>(
         <Path 
           feature={feature} 
-          style={countyStyle} 
+          style={setStyle("ID" + feature.properties["GEOID"])} 
           key={"ID" + feature.properties["GEOID"]} 
+          id={"ID" + feature.properties["GEOID"]}
+          geoid={feature.properties["GEOID"]}
+          onClick={onClick}
+          onMouseOver={onMouseOver}
         />
       ))}
 
@@ -86,8 +127,11 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
         <Path 
           feature={feature} 
           style={stateStyle} 
-          key={"ID" + feature.properties["STATEFP"]} 
-          />
+          key={"ID" + feature.properties["STATEFP"]}
+          id={"ID" + feature.properties["STATEFP"]} 
+          // onClick={onClick}
+          // onMouseover={onMouseover}
+        />
       ))}
 
     </svg>
