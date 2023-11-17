@@ -111,7 +111,7 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   const selectStyle = (id)=>{
     if (id==activeId) {
       return activeCountyStyle
-    } else if (id in neighborIds) {
+    } else if (neighborIds.includes(id)) {
       console.log("N", id, activeId)
       return neighborCountyStyle
     }
