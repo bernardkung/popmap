@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { useState, useEffect } from "react";
 
-const Path = ({ feature, style, onClick, id, geoid, onMouseOver }) => {
+const Path = ({ feature, style, onClick, id, geoid, onMouseOver, onRightClick }) => {
   
   const projection = d3.geoAlbersUsa()
   const geoGenerator = d3.geoPath()
@@ -16,6 +16,7 @@ const Path = ({ feature, style, onClick, id, geoid, onMouseOver }) => {
         id={id}
         data-geoid={geoid}
         onMouseOver={onMouseOver}
+        onContextMenu={onRightClick}
     />    
   )
 }

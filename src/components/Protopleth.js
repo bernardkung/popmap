@@ -16,9 +16,9 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   const height = 700
 
   // Dynamic dimensions
-  const [viewsize, setViewsize] = useState([window.innerWidth, window.innerHeight])
-  const [activePath, setActivePath] = useState()
-  const [neighbors, setNeighbors] = useState([])
+  // const [viewsize, setViewsize] = useState([window.innerWidth, window.innerHeight])
+  const [activeId, setActiveId] = useState()
+  const [neighborIds, setNeighborIds] = useState([])
   
   // Define features and projections
   const counties = topojson.feature(countydata, countydata.objects.counties)
@@ -29,7 +29,7 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
 
 
   // Find neighboring counties
-  const getNeighbors = (targetGEOID)=>{
+  const getNeighbors = (geoid)=>{
     const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
     const ids = counties.features.map(d => d.properties.GEOID)
 
@@ -40,16 +40,45 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
       return result;
     }
 
+    // // Returns the actual paths
+    // const neighborhood = counties.features
+    //   .filter(d =>
+    //     getcontig(targetGEOID).includes(d.properties.GEOID)
+    //   )
     const neighborhood = counties.features
       .filter(d =>
-        getcontig(targetGEOID).includes(d.properties.GEOID)
+        getcontig(geoid).includes(d.properties.GEOID)
       )
-      .map(d=>"ID" + d.properties.GEOID)
+      .map(d =>
+        d.properties.GEOID
+      )
 
     return neighborhood
+    // return []
   }
 
   // Set styles for paths
+  const countyStyle = {
+    active: {
+      fill: "green",
+      stroke: "black",
+      strokeLinejoin:"round",
+      strokeWidth:"0.15",
+    },
+    neighbor: {
+      fill: "blue",
+      stroke: "black",
+      strokeLinejoin:"round",
+      strokeWidth:"0.15",
+    },
+    inactive: {
+      fill: "white",
+      stroke: "black",
+      strokeLinejoin:"round",
+      strokeWidth:"0.15",
+    },
+  }
+
   const activeCountyStyle = {
     fill: "green",
     stroke: "black",
@@ -78,31 +107,44 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
     strokeWidth:"0.55",
   }
 
-  // Mouse functions
-  const onClick = (e)=>{
-    if (e.target.id == activePath) {
-      setActivePath(null)
-    } else {
-      setActivePath(e.target.id)
-    }
-  } 
-
-  const onMouseOver = (e)=>{
-    const geoid = e.target.getAttribute('data-geoid')
-    setNeighbors(getNeighbors(geoid))
-    // const neighbors = getNeighbors(geoid)
-    console.log("New neighbors:", neighbors)
-  }
-
   // Determine which style to use
-  const setStyle = (id)=>{
-    if (id==activePath) {
+  const selectStyle = (id)=>{
+    if (id==activeId) {
       return activeCountyStyle
-    } else if (id in neighbors) {
-      console.log("N", id, activePath)
+    } else if (id in neighborIds) {
+      console.log("N", id, activeId)
       return neighborCountyStyle
     }
     return inactiveCountyStyle
+  }
+
+
+  // Mouse functions
+  const onClick = (e)=>{
+    const geoid = e.target.getAttribute('data-geoid')
+    setNeighborIds(getNeighbors(geoid))
+    console.log("new neighbors", neighborIds)
+    if (geoid in neighborIds) {
+      console.log("N", geoid, activeId)
+    }
+  } 
+
+  const onRightClick = (e)=>{
+    e.preventDefault()
+    const geoid = e.target.getAttribute('data-geoid')
+    if (geoid == activeId) {
+      setActiveId(null)
+    } else {
+      setActiveId(geoid)
+    }
+  }
+
+  const onMouseOver = (e)=>{
+    // const geoid = e.target.getAttribute('data-geoid')
+    // setNeighborIds(getNeighbors(geoid))
+    // // const neighbors = getNeighbors(geoid)
+    // console.log("New neighbors:", neighborIds)
+    // console.log("mouseover")
   }
 
   return (
@@ -112,12 +154,13 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
       {counties.features.map(feature=>(
         <Path 
           feature={feature} 
-          style={setStyle("ID" + feature.properties["GEOID"])} 
+          style={selectStyle(feature.properties["GEOID"])} 
           key={"ID" + feature.properties["GEOID"]} 
           id={"ID" + feature.properties["GEOID"]}
           geoid={feature.properties["GEOID"]}
           onClick={onClick}
           onMouseOver={onMouseOver}
+          onRightClick={onRightClick}
         />
       ))}
 
