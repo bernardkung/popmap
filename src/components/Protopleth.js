@@ -26,35 +26,49 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   const projection = d3.geoAlbersUsa()
   const geoGenerator = d3.geoPath()
     .projection(projection)
-
+  const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
+  const ids = counties.features.map(d => d.properties.GEOID)
 
   // Find neighboring counties
   const getNeighbors = (geoid)=>{
-    const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
-    const ids = counties.features.map(d => d.properties.GEOID)
-
+    // const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
+    // const ids = counties.features.map(d => d.properties.GEOID)
     const getcontig = id => {
-      var result = [];
-      var contig = neighbors[ids.indexOf(id)];
-      result = contig.map(i => ids[i]);
+      // const result = [];
+      const contig = neighbors[ids.indexOf(id)];
+      const result = contig.map(i => ids[i]);
       return result;
     }
 
-    // // Returns the actual paths
-    // const neighborhood = counties.features
+    // // Returns the actual features
+    // const neighborhoodFeatures = counties.features
     //   .filter(d =>
-    //     getcontig(targetGEOID).includes(d.properties.GEOID)
+    //     getcontig(geoid).includes(d.properties.GEOID)
     //   )
     const neighborhood = counties.features
-      .filter(d =>
-        getcontig(geoid).includes(d.properties.GEOID)
-      )
-      .map(d =>
-        d.properties.GEOID
-      )
+      .filter(d => getcontig(geoid).includes(d.properties.GEOID))
+      .map(d => d.properties.GEOID)
 
     return neighborhood
-    // return []
+  }
+
+  const checkCounty = (totalPop, targetPop, targetCounty, totalCounties)=>{
+    if (totalPop + targetCounty.pop > targetPop) {
+      return totalCounties
+    } else {
+      checkCounty(totalPop, targetPop, targetCounty, totalCounties)
+    }
+  }
+
+  const getAdjacent = (totalPop, counties)=>{
+    // Use the counties array to identify all items in the neighbors array
+    // Should end up with an array of current neighbors
+
+    // Remove duplicates
+
+    // Sort by population
+
+    // Loop through all current neighbors
   }
 
   // Set styles for paths
@@ -112,7 +126,6 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
     if (id==activeId) {
       return activeCountyStyle
     } else if (neighborIds.includes(id)) {
-      console.log("N", id, activeId)
       return neighborCountyStyle
     }
     return inactiveCountyStyle
@@ -123,9 +136,8 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   const onClick = (e)=>{
     const geoid = e.target.getAttribute('data-geoid')
     setNeighborIds(getNeighbors(geoid))
-    console.log("new neighbors", neighborIds)
     if (geoid in neighborIds) {
-      console.log("N", geoid, activeId)
+      // console.log("N", geoid, activeId)
     }
   } 
 
@@ -140,11 +152,6 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   }
 
   const onMouseOver = (e)=>{
-    // const geoid = e.target.getAttribute('data-geoid')
-    // setNeighborIds(getNeighbors(geoid))
-    // // const neighbors = getNeighbors(geoid)
-    // console.log("New neighbors:", neighborIds)
-    // console.log("mouseover")
   }
 
   return (

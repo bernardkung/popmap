@@ -7,7 +7,6 @@ const Path = ({ feature, style, onClick, id, geoid, onMouseOver, onRightClick })
   const geoGenerator = d3.geoPath()
     .projection(projection)
 
-  if (style.fill=="blue") {console.log(geoid)}
   return (  
     <path 
         d={geoGenerator(feature)}

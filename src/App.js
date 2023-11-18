@@ -35,6 +35,9 @@ function App() {
     return () => undefined
   }, [])
 
+  useEffect(()=>{
+    // setLoading()
+  }, [activeCounty])
 
   return (
     <div class="container">
