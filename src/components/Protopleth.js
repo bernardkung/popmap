@@ -70,8 +70,16 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
       .filter(d => getcontigs(geoids).includes(d.properties.GEOID))
       // Remove original array
       .filter(d => !geoids.includes(d.properties.GEOID))
+      .sort((a, b)=>{
+        const aPop = parseInt(valuemap.get(a.properties.GEOID))
+        const bPop = parseInt(valuemap.get(b.properties.GEOID)) 
+        return aPop < bPop ? -1 : aPop > bPop ? 1 : 0
+      })
       .map(d => d.properties.GEOID)
-
+    //   .map(d=>[d.properties.GEOID, valuemap.get(d.properties.GEOID)])
+    // console.log(neighborhoodIds)
+    // console.log("neighborhood", neighborhood)
+    // return neighborhoodIds
     return neighborhood
   }
 
@@ -94,13 +102,11 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
 
   const getAdjacent = (geoids, targetPop)=>{
     console.log("adj", geoids, targetPop)
-    return getArrayNeighbors(geoids)
     // Use the counties array to identify all items in the neighbors array
     // Should end up with an array of current neighbors
-
-    // Remove duplicates
-
-    // Sort by population
+    // already unique and sorted by ascending pop
+    const candidates = getArrayNeighbors(geoids)
+    return candidates
 
     // Loop through all current neighbors
   }
