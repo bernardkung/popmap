@@ -88,32 +88,39 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
 
   const checkCounties = (geoids, neighborGeoids, targetPop, totalPop)=>{
     console.log("checking", geoids, targetPop, totalPop )
-    // geoids.forEach(geoid =>{
-    //   const countyPop = parseInt(valuemap.get(geoid))
-    //   // Exit case
-    //   if (countyPop + totalPop > targetPop) {
-    //     return geoids
-    //   } else {
-    //     totalPop += countyPop
-    //     geoids.push(geoid)
-    //   }
-    //   // If all counties have been checked
-    //   // generate a new set of neighboring counties
-    //   const newGeoids = getArrayNeighbors(geoids)
-    //   return checkCounties(newGeoids, targetPop, totalPop)
-    // })
+    // Loop through each neighbor
+    for (let i = 0; i < neighborGeoids.length; i++) {
+      const geoid = neighborGeoids[i]
+      const countyPop = parseInt(valuemap.get(geoid))
+      console.log("loop", geoid, countyPop, totalPop)
+      // Exit case
+      if (countyPop + parseInt(totalPop) > parseInt(targetPop)) {
+        console.log("exiting")
+        return geoids
+      } else {
+        // Add the neighbor to array of geoids and increase the population
+        totalPop += parseInt(countyPop)
+        geoids.push(geoid)
+      }
+    }
+    console.log("results", geoids, targetPop, totalPop )
+    // If all counties have been checked
+    // generate a new set of neighboring counties
+    const newNeighbors = getArrayNeighbors(geoids)
+    console.log("new neighbors", newNeighbors)
+    return checkCounties(geoids, newNeighbors, targetPop, totalPop)
+    // return geoids
   }
 
   const getAdjacent = (geoids, targetPop)=>{
-    console.log("adj", geoids, targetPop)
     // Use the counties array to identify all items in the neighbors array
     // Should end up with an array of current neighbors
     // already unique and sorted by ascending pop
     const neighborGeoids = getArrayNeighbors(geoids)
-    console.log("adjacent", checkCounties(geoids, neighborGeoids, 100000, 0))
-    return neighborGeoids
+    // return neighborGeoids
 
-    // Loop through all current neighbors
+    console.log("adjacent", checkCounties(geoids, neighborGeoids, 1000000, 0))
+    return checkCounties(geoids, neighborGeoids, 1000000, 0)
   }
 
   // Set styles for paths
@@ -188,10 +195,14 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   const onRightClick = (e)=>{
     e.preventDefault()
     const geoid = e.target.getAttribute('data-geoid')
+    const pop = e.target.getAttribute('data-pop')
+    console.log('op', geoid, pop)
     if (geoid == activeId) {
       setActiveId(null)
+      setPop(0)
     } else {
       setActiveId(geoid)
+      setPop(parseInt(pop))
     }
   }
 

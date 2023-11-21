@@ -41,8 +41,8 @@ function App() {
 
   return (
     <div class="container">
-      <div id="pop">{pop}</div>
       <div id="location">{location}</div>
+      <div id="pop">{pop}</div>
       {/* { loading && <div>loading</div> } */}
       {/* { !loading && <Geopleth 
         topodata={topodata} 
