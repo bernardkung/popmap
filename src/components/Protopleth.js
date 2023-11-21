@@ -83,24 +83,25 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
 
     const neighborhoodIds = neighborhood.map(d=>d.properties.GEOID)
     // return neighborhoodIds
-    return neighborhood
+    return neighborhoodIds
   }
 
-  const checkCounties = (totalPop, targetPop, counties )=>{
-    counties.forEach(county =>{
-      const countyPop = valuemap(county.properties.GEOID)
-      // Exit case
-      if (countyPop + totalPop > targetPop) {
-        return counties
-      } else {
-        totalPop += countyPop
-        counties.push(county)
-      }
-      // If all counties have been checked
-      // generate a new set of neighboring counties
-
-      return checkCounties(totalPop, targetPop, counties)
-    })
+  const checkCounties = (geoids, neighborGeoids, targetPop, totalPop)=>{
+    console.log("checking", geoids, targetPop, totalPop )
+    // geoids.forEach(geoid =>{
+    //   const countyPop = parseInt(valuemap.get(geoid))
+    //   // Exit case
+    //   if (countyPop + totalPop > targetPop) {
+    //     return geoids
+    //   } else {
+    //     totalPop += countyPop
+    //     geoids.push(geoid)
+    //   }
+    //   // If all counties have been checked
+    //   // generate a new set of neighboring counties
+    //   const newGeoids = getArrayNeighbors(geoids)
+    //   return checkCounties(newGeoids, targetPop, totalPop)
+    // })
   }
 
   const getAdjacent = (geoids, targetPop)=>{
@@ -108,8 +109,9 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
     // Use the counties array to identify all items in the neighbors array
     // Should end up with an array of current neighbors
     // already unique and sorted by ascending pop
-    const candidates = getArrayNeighbors(geoids)
-    return candidates
+    const neighborGeoids = getArrayNeighbors(geoids)
+    console.log("adjacent", checkCounties(geoids, neighborGeoids, 100000, 0))
+    return neighborGeoids
 
     // Loop through all current neighbors
   }
