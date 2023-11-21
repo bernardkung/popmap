@@ -28,6 +28,9 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
     .projection(projection)
   const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
   const ids = counties.features.map(d => d.properties.GEOID)
+  // const neighborDict = ids.map((x,i)=>{return {[x]: neighbors[i]}})
+  // Mapping function to crosswalk population and topojson
+  const valuemap = new Map(popdata.map(p => [p.STATE + p.COUNTY, p.POPESTIMATE2022]));
 
   // Find neighboring counties
   const getNeighbors = (geoid)=>{
@@ -40,11 +43,6 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
       return result;
     }
 
-    // // Returns the actual features
-    // const neighborhoodFeatures = counties.features
-    //   .filter(d =>
-    //     getcontig(geoid).includes(d.properties.GEOID)
-    //   )
     const neighborhood = counties.features
       .filter(d => getcontig(geoid).includes(d.properties.GEOID))
       .map(d => d.properties.GEOID)
@@ -52,15 +50,51 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
     return neighborhood
   }
 
-  const checkCounty = (totalPop, targetPop, targetCounty, totalCounties)=>{
-    if (totalPop + targetCounty.pop > targetPop) {
-      return totalCounties
-    } else {
-      checkCounty(totalPop, targetPop, targetCounty, totalCounties)
+  const getArrayNeighbors = (geoids)=>{
+    const getcontigs = geoids => {
+      return geoids.map(geoid => {
+        const index = neighbors[ids.indexOf(geoid)]
+        const result = index.map(i => ids[i])
+        return result
+      }).flat(Infinity)
+      // return contigs
     }
+
+    // List of all neighboring GEOIDS
+    const contigs = getcontigs(geoids)
+    const neighborhoodIds = [...new Set(contigs.filter(c=>!geoids.includes(c)))]
+
+    // List of all neighboring FEATURES, and reduced to only GEOIDS
+    const neighborhood = counties.features
+      // Filter for neighbors
+      .filter(d => getcontigs(geoids).includes(d.properties.GEOID))
+      // Remove original array
+      .filter(d => !geoids.includes(d.properties.GEOID))
+      .map(d => d.properties.GEOID)
+
+    return neighborhood
   }
 
-  const getAdjacent = (totalPop, counties)=>{
+  const checkCounties = (totalPop, targetPop, counties )=>{
+    counties.forEach(county =>{
+      const countyPop = valuemap(county.properties.GEOID)
+      // Exit case
+      if (countyPop + totalPop > targetPop) {
+        return counties
+      } else {
+        totalPop += countyPop
+        counties.push(county)
+      }
+      // If all counties have been checked
+      // generate a new set of neighboring counties
+
+      return checkCounties(totalPop, targetPop, counties)
+    })
+  }
+
+  const getAdjacent = (geoids, targetPop)=>{
+    console.log("adj", geoids, targetPop)
+    return getArrayNeighbors(geoids)
     // Use the counties array to identify all items in the neighbors array
     // Should end up with an array of current neighbors
 
@@ -135,10 +169,9 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   // Mouse functions
   const onClick = (e)=>{
     const geoid = e.target.getAttribute('data-geoid')
-    setNeighborIds(getNeighbors(geoid))
-    if (geoid in neighborIds) {
-      // console.log("N", geoid, activeId)
-    }
+    const pop = e.target.getAttribute('data-pop')
+    // console.log("click", geoid, pop)
+    setNeighborIds(getAdjacent([geoid], pop))
   } 
 
   const onRightClick = (e)=>{
@@ -165,6 +198,7 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
           key={"ID" + feature.properties["GEOID"]} 
           id={"ID" + feature.properties["GEOID"]}
           geoid={feature.properties["GEOID"]}
+          pop={valuemap.get(feature.properties["GEOID"])}
           onClick={onClick}
           onMouseOver={onMouseOver}
           onRightClick={onRightClick}
