@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import geoAlbersUsaPr  from "./geoAlbersUsaPr"
 import Path from './Path'
 
-const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocation }) => {
+const Protopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLocation }) => {
 // Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
 
 
@@ -87,15 +87,15 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   }
 
   const checkCounties = (geoids, neighborGeoids, targetPop, totalPop)=>{
-    console.log("checking", geoids, targetPop, totalPop )
+    console.log("checking", geoids, "target:", targetPop, "total:", totalPop )
     // Loop through each neighbor
     for (let i = 0; i < neighborGeoids.length; i++) {
       const geoid = neighborGeoids[i]
       const countyPop = parseInt(valuemap.get(geoid))
-      console.log("loop", geoid, countyPop, totalPop)
+      console.log("loop", "geoid:", geoid, "pop:", countyPop, "target:", targetPop, "total:", totalPop )
       // Exit case
       if (countyPop + parseInt(totalPop) > parseInt(targetPop)) {
-        console.log("exiting")
+        console.log("exiting", geoids, "target:", targetPop, "total:", totalPop )
         return geoids
       } else {
         // Add the neighbor to array of geoids and increase the population
@@ -103,7 +103,7 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
         geoids.push(geoid)
       }
     }
-    console.log("results", geoids, targetPop, totalPop )
+    console.log("results", geoids, "target:", targetPop, "total:", totalPop )
     // If all counties have been checked
     // generate a new set of neighboring counties
     const newNeighbors = getArrayNeighbors(geoids)
@@ -119,8 +119,8 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
     const neighborGeoids = getArrayNeighbors(geoids)
     // return neighborGeoids
 
-    console.log("adjacent", checkCounties(geoids, neighborGeoids, 1000000, 0))
-    return checkCounties(geoids, neighborGeoids, 1000000, 0)
+    // console.log("adjacent", checkCounties(geoids, neighborGeoids, targetPop, 0))
+    return checkCounties(geoids, neighborGeoids, targetPop, 0)
   }
 
   // Set styles for paths
@@ -187,7 +187,7 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
   // Mouse functions
   const onClick = (e)=>{
     const geoid = e.target.getAttribute('data-geoid')
-    const pop = e.target.getAttribute('data-pop')
+    // const pop = e.target.getAttribute('data-pop')
     // console.log("click", geoid, pop)
     setNeighborIds(getAdjacent([geoid], pop))
   } 
@@ -199,13 +199,15 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
     console.log('op', geoid, pop)
     if (geoid == activeId) {
       setActiveId(null)
+      setLocation(null)
       setPop(0)
     } else {
       setActiveId(geoid)
+      setLocation(counties.features.filter(c=>c.properties.GEOID==geoid)[0].properties.NAMELSAD)
       setPop(parseInt(pop))
     }
   }
-
+  
   const onMouseOver = (e)=>{
   }
 

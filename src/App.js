@@ -65,6 +65,7 @@ function App() {
           countydata={countydata} 
           statedata={statedata} 
           popdata={popdata} 
+          pop={pop}
           setPop={setPop}
           setLocation={setLocation}
         /> }
