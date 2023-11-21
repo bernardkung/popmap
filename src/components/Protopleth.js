@@ -62,7 +62,7 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
 
     // List of all neighboring GEOIDS
     const contigs = getcontigs(geoids)
-    const neighborhoodIds = [...new Set(contigs.filter(c=>!geoids.includes(c)))]
+    // const neighborhoodIds = [...new Set(contigs.filter(c=>!geoids.includes(c)))]
 
     // List of all neighboring FEATURES, and reduced to only GEOIDS
     const neighborhood = counties.features
@@ -75,10 +75,13 @@ const Protopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocat
         const bPop = parseInt(valuemap.get(b.properties.GEOID)) 
         return aPop < bPop ? -1 : aPop > bPop ? 1 : 0
       })
-      .map(d => d.properties.GEOID)
-    //   .map(d=>[d.properties.GEOID, valuemap.get(d.properties.GEOID)])
-    // console.log(neighborhoodIds)
-    // console.log("neighborhood", neighborhood)
+      // .map(d => d.properties.GEOID)
+      
+    const neighborhoodPop = neighborhood
+        .map(d=>[d.properties.GEOID, valuemap.get(d.properties.GEOID)])
+    console.log("neighborhood", neighborhoodPop)
+
+    const neighborhoodIds = neighborhood.map(d=>d.properties.GEOID)
     // return neighborhoodIds
     return neighborhood
   }
