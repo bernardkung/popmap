@@ -18,7 +18,7 @@ function App() {
   // On Load
   useEffect(()=>{
     Promise.all([
-      d3.json("./data/counties-albers-10m.json"), 
+      d3.json("./data/counties-albers-10m.json"),
       d3.json("./data/cb_2022_us_county_20m.json"),
       d3.json("./data/cb_2022_us_state_20m.json"),
       d3.csv("./data/co-est2022-alldata.csv"),

@@ -8,7 +8,7 @@ import Path from './Path'
 const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLocation }) => {
 // Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
 
-
+  console.log(countydata)
 
   // Set the dimensions and margins of the graph
   const margin = { top: 0, right: 60, bottom: 60, left: 160 }
