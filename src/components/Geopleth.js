@@ -88,12 +88,12 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
 
   const checkCounties = (geoids, neighborGeoids, targetPop, totalPop)=>{
     console.log("checking", geoids, "target:", targetPop, "total:", totalPop )
-    // Loop through each neighbor
+    // Loop through each neighbor and check if target pop has been reached
     for (let i = 0; i < neighborGeoids.length; i++) {
       const geoid = neighborGeoids[i]
       const countyPop = parseInt(valuemap.get(geoid))
       console.log("loop", "geoid:", geoid, "pop:", countyPop, "target:", targetPop, "total:", totalPop )
-      // Exit case
+      // Exit case: target pop exceeded
       if (countyPop + parseInt(totalPop) > parseInt(targetPop)) {
         console.log("exiting", geoids, "target:", targetPop, "total:", totalPop )
         return geoids
@@ -109,7 +109,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     const newNeighbors = getArrayNeighbors(geoids)
     console.log("new neighbors", newNeighbors)
     // Second exit condition for error handling
-    if (newNeighbors==[]) {
+    if (newNeighbors.length==0) {
       console.log("exiting", geoids, "target:", targetPop, "total:", totalPop )
       return geoids
     }
@@ -242,8 +242,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
           style={stateStyle} 
           key={"ID" + feature.properties["STATEFP"]}
           id={"ID" + feature.properties["STATEFP"]} 
-          // onClick={onClick}
-          // onMouseover={onMouseover}
         />
       ))}
 
