@@ -28,27 +28,10 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     .projection(projection)
   const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
   const ids = counties.features.map(d => d.properties.GEOID)
-  // const neighborDict = ids.map((x,i)=>{return {[x]: neighbors[i]}})
   // Mapping function to crosswalk population and topojson
   const valuemap = new Map(popdata.map(p => [p.STATE + p.COUNTY, p.POPESTIMATE2022]));
 
-  // Find neighboring counties
-  const getNeighbors = (geoid)=>{
-    // const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
-    // const ids = counties.features.map(d => d.properties.GEOID)
-    const getcontig = id => {
-      // const result = [];
-      const contig = neighbors[ids.indexOf(id)];
-      const result = contig.map(i => ids[i]);
-      return result;
-    }
-
-    const neighborhood = counties.features
-      .filter(d => getcontig(geoid).includes(d.properties.GEOID))
-      .map(d => d.properties.GEOID)
-
-    return neighborhood
-  }
+  
 
   const getArrayNeighbors = (geoids)=>{
     const getcontigs = geoids => {
@@ -57,14 +40,13 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
         const result = index.map(i => ids[i])
         return result
       }).flat(Infinity)
-      // return contigs
     }
 
     // List of all neighboring GEOIDS
     const contigs = getcontigs(geoids)
     // const neighborhoodIds = [...new Set(contigs.filter(c=>!geoids.includes(c)))]
 
-    // List of all neighboring FEATURES, and reduced to only GEOIDS
+    // List of all neighboring FEATURES
     const neighborhood = counties.features
       // Filter for neighbors
       .filter(d => getcontigs(geoids).includes(d.properties.GEOID))
@@ -75,27 +57,25 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
         const bPop = parseInt(valuemap.get(b.properties.GEOID)) 
         return aPop < bPop ? -1 : aPop > bPop ? 1 : 0
       })
-      // .map(d => d.properties.GEOID)
-      
+    
+    // Get populations for each neighboring feature
     const neighborhoodPop = neighborhood
         .map(d=>[d.properties.GEOID, valuemap.get(d.properties.GEOID)])
-    console.log("neighborhood", neighborhoodPop)
-
+    
+    // Reduce each neighboring feature to geoid
     const neighborhoodIds = neighborhood.map(d=>d.properties.GEOID)
-    // return neighborhoodIds
+    
     return neighborhoodIds
   }
 
   const checkCounties = (geoids, neighborGeoids, targetPop, totalPop)=>{
-    console.log("checking", geoids, "target:", targetPop, "total:", totalPop )
     // Loop through each neighbor and check if target pop has been reached
     for (let i = 0; i < neighborGeoids.length; i++) {
       const geoid = neighborGeoids[i]
       const countyPop = parseInt(valuemap.get(geoid))
-      console.log("loop", "geoid:", geoid, "pop:", countyPop, "target:", targetPop, "total:", totalPop )
+
       // Exit case: target pop exceeded
       if (countyPop + parseInt(totalPop) > parseInt(targetPop)) {
-        console.log("exiting", geoids, "target:", targetPop, "total:", totalPop )
         return geoids
       } else {
         // Add the neighbor to array of geoids and increase the population
@@ -103,28 +83,23 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
         geoids.push(geoid)
       }
     }
-    console.log("results", geoids, "target:", targetPop, "total:", totalPop )
     // If all counties have been checked
     // generate a new set of neighboring counties
     const newNeighbors = getArrayNeighbors(geoids)
-    console.log("new neighbors", newNeighbors)
+    
     // Second exit condition for error handling
     if (newNeighbors.length==0) {
       console.log("exiting", geoids, "target:", targetPop, "total:", totalPop )
       return geoids
     }
+
     return checkCounties(geoids, newNeighbors, targetPop, totalPop)
-    // return geoids
   }
 
   const getAdjacent = (geoids, targetPop)=>{
-    // Use the counties array to identify all items in the neighbors array
-    // Should end up with an array of current neighbors
-    // already unique and sorted by ascending pop
+    // Get unique neighboring geoids, sorted by population
     const neighborGeoids = getArrayNeighbors(geoids)
-    // return neighborGeoids
 
-    // console.log("adjacent", checkCounties(geoids, neighborGeoids, targetPop, 0))
     return checkCounties(geoids, neighborGeoids, targetPop, 0)
   }
 
@@ -192,8 +167,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   // Mouse functions
   const onClick = (e)=>{
     const geoid = e.target.getAttribute('data-geoid')
-    // const pop = e.target.getAttribute('data-pop')
-    // console.log("click", geoid, pop)
     setNeighborIds(getAdjacent([geoid], pop))
   } 
 
