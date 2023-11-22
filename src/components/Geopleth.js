@@ -126,21 +126,21 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   }
 
   const activeCountyStyle = {
-    fill: "green",
-    stroke: "black",
+    fill: "#FFC5FC",
+    stroke: "#FF2EF8",
     strokeLinejoin:"round",
-    strokeWidth:"0.15",
+    strokeWidth:"0.55",
   }
 
   const neighborCountyStyle = {
-    fill: "blue",
-    stroke: "black",
+    fill: "#929FF0",
+    stroke: "#00EDFF",
     strokeLinejoin:"round",
-    strokeWidth:"0.15",
+    strokeWidth:"0.55",
   }
 
   const inactiveCountyStyle = {
-    fill: "white",
+    fill: "#D0D0D0",
     stroke: "black",
     strokeLinejoin:"round",
     strokeWidth:"0.15",
