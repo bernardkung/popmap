@@ -1,163 +1,254 @@
 import * as d3 from "d3";
 import { render } from 'react-dom'
 import * as topojson from "topojson-client"
-import { useState, useEffect, useRef } from "react";
-import geoAlbersUsaPr  from "./geoAlbersUsaPr";
+import { useState, useEffect, useRef } from "react"
+import geoAlbersUsaPr  from "./geoAlbersUsaPr"
+import Path from './Path'
+
+const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLocation }) => {
+// Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
 
 
-const Geopleth = ({ topodata, countydata, statedata, popdata, setPop, setLocation }) => {
-
-  // Check that data was passed correctly
-  // console.log(" chart, loading", loading)
-  // console.log(" chart, geodata", geodata)
-  // console.log(" chart, popdata", popdata)
-  // console.log(" chart, statedata", statedata)
-  // console.log(" chart, countydata", countydata)
-  
-  // const ref = useRef()
 
   // Set the dimensions and margins of the graph
   const margin = { top: 0, right: 60, bottom: 60, left: 160 }
   const width = 900
   const height = 700
+
+  // Dynamic dimensions
+  // const [viewsize, setViewsize] = useState([window.innerWidth, window.innerHeight])
+  const [activeId, setActiveId] = useState()
+  const [neighborIds, setNeighborIds] = useState([])
   
-  const svg = d3
-    .select(".container")
-    .append("svg")
-    .attr("id", "geopleth")
-    .attr("width", width )
-    .attr("height", height )
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+  // Define features and projections
+  const counties = topojson.feature(countydata, countydata.objects.counties)
+  const states = topojson.feature(statedata, statedata.objects.states)
+  const projection = d3.geoAlbersUsa()
+  const geoGenerator = d3.geoPath()
+    .projection(projection)
+  const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
+  const ids = counties.features.map(d => d.properties.GEOID)
+  // const neighborDict = ids.map((x,i)=>{return {[x]: neighbors[i]}})
+  // Mapping function to crosswalk population and topojson
+  const valuemap = new Map(popdata.map(p => [p.STATE + p.COUNTY, p.POPESTIMATE2022]));
 
-  useEffect(()=>{ 
-    // append the svg object to the body of the page
-
-    // quantiLe color scale
-    const color = d3.scaleQuantile(
-      popdata.filter(p => p.COUNTY != '000').map(p => parseInt(p.POPESTIMATE2022)),
-      d3.schemeBlues[9]
-    )
-    const path = d3.geoPath();
-    const valuemap = new Map(popdata.map(p => [p.STATE + p.COUNTY, p.POPESTIMATE2022]));
-
-    // // Define meshes & features 
-    // States meshes & features 
-    const states = topojson.feature(statedata, statedata.objects.states)
-    const statemap = new Map(states.features.map(d => [d.properties.STATEFP, d]))
-    const statemesh = topojson.mesh(statedata, statedata.objects.states, (a, b) => a !== b)
-    const stateProjection = d3.geoAlbersUsa().fitSize([
-        width - margin.left - margin.right, height - margin.top - margin.bottom,
-      ], statemesh)
-    // Counties meshes & features 
-    const counties = topojson.feature(countydata, countydata.objects.counties)
-    const countyProjection = d3.geoAlbersUsa().fitSize([
-        width - margin.left - margin.right, height - margin.top - margin.bottom,
-      ], statemesh)
-
-    // Find neighboring counties
-    const getNeighbors = (targetGEOID)=>{
-      const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
-      const ids = counties.features.map(d => d.properties.GEOID)
-
-      const getcontig = id => {
-        var result = [];
-        var contig = neighbors[ids.indexOf(id)];
-        result = contig.map(i => ids[i]);
-        return result;
-      }
-
-      const neighborhood = counties.features.filter(d =>
-        getcontig(targetGEOID).includes(d.properties.GEOID)
-      )
-
-      return neighborhood
-    }
-  
-    // Mouse functions
-    const mouseOver = (e, d)=>{
-      d3.select(e.target)
-        .transition()
-        .duration(200)
-        .style("fill", "pink")
-      console.log("Active: " + e.target.getAttribute("active"))
+  // Find neighboring counties
+  const getNeighbors = (geoid)=>{
+    // const neighbors = topojson.neighbors(countydata.objects.counties.geometries)
+    // const ids = counties.features.map(d => d.properties.GEOID)
+    const getcontig = id => {
+      // const result = [];
+      const contig = neighbors[ids.indexOf(id)];
+      const result = contig.map(i => ids[i]);
+      return result;
     }
 
-    const mouseLeave = (e, d)=>{
-      d3.select(e.target)
-        .transition()
-        .duration(200)
-        .style("fill", "white")
+    const neighborhood = counties.features
+      .filter(d => getcontig(geoid).includes(d.properties.GEOID))
+      .map(d => d.properties.GEOID)
+
+    return neighborhood
+  }
+
+  const getArrayNeighbors = (geoids)=>{
+    const getcontigs = geoids => {
+      return geoids.map(geoid => {
+        const index = neighbors[ids.indexOf(geoid)]
+        const result = index.map(i => ids[i])
+        return result
+      }).flat(Infinity)
+      // return contigs
     }
 
-    const mouseClick = (e, d)=>{
-      const geoID = e.target.getAttribute("data-fips")
-      // console.log("click", e.target.getAttribute("ID"))
-      // Setpop
-      setPop(e.target.getAttribute("data-population"))
-      setLocation(`${e.target.getAttribute("data-namelsad")}, ${e.target.getAttribute("data-statename")}`)
-      // Get neighbors
-      const neighbors = getNeighbors(geoID)
-      // Set neighbor colors
-      neighbors.forEach(n=>{
-        // console.log("Making #ID" + n.properties.GEOID + " green")
-        d3.select("#ID" + n.properties.GEOID)
-          .attr("fill", "green")
+    // List of all neighboring GEOIDS
+    const contigs = getcontigs(geoids)
+    // const neighborhoodIds = [...new Set(contigs.filter(c=>!geoids.includes(c)))]
+
+    // List of all neighboring FEATURES, and reduced to only GEOIDS
+    const neighborhood = counties.features
+      // Filter for neighbors
+      .filter(d => getcontigs(geoids).includes(d.properties.GEOID))
+      // Remove original array
+      .filter(d => !geoids.includes(d.properties.GEOID))
+      .sort((a, b)=>{
+        const aPop = parseInt(valuemap.get(a.properties.GEOID))
+        const bPop = parseInt(valuemap.get(b.properties.GEOID)) 
+        return aPop < bPop ? -1 : aPop > bPop ? 1 : 0
       })
-      // Make the county active
-      console.log(e.target)
+      // .map(d => d.properties.GEOID)
+      
+    const neighborhoodPop = neighborhood
+        .map(d=>[d.properties.GEOID, valuemap.get(d.properties.GEOID)])
+    console.log("neighborhood", neighborhoodPop)
+
+    const neighborhoodIds = neighborhood.map(d=>d.properties.GEOID)
+    // return neighborhoodIds
+    return neighborhoodIds
+  }
+
+  const checkCounties = (geoids, neighborGeoids, targetPop, totalPop)=>{
+    console.log("checking", geoids, "target:", targetPop, "total:", totalPop )
+    // Loop through each neighbor
+    for (let i = 0; i < neighborGeoids.length; i++) {
+      const geoid = neighborGeoids[i]
+      const countyPop = parseInt(valuemap.get(geoid))
+      console.log("loop", "geoid:", geoid, "pop:", countyPop, "target:", targetPop, "total:", totalPop )
+      // Exit case
+      if (countyPop + parseInt(totalPop) > parseInt(targetPop)) {
+        console.log("exiting", geoids, "target:", targetPop, "total:", totalPop )
+        return geoids
+      } else {
+        // Add the neighbor to array of geoids and increase the population
+        totalPop += parseInt(countyPop)
+        geoids.push(geoid)
+      }
     }
+    console.log("results", geoids, "target:", targetPop, "total:", totalPop )
+    // If all counties have been checked
+    // generate a new set of neighboring counties
+    const newNeighbors = getArrayNeighbors(geoids)
+    console.log("new neighbors", newNeighbors)
+    // Second exit condition for error handling
+    if (newNeighbors==[]) {
+      console.log("exiting", geoids, "target:", targetPop, "total:", totalPop )
+      return geoids
+    }
+    return checkCounties(geoids, newNeighbors, targetPop, totalPop)
+    // return geoids
+  }
 
-    // Draw Counties
-    svg.append("g")
-      .selectAll("path")
-      .data(counties.features)
-      .join("path")
-        .attr("ID", d=>"#ID" + d.properties.GEOID)
-        .attr("class", "county")
-        .attr("fill", "white")
-        .attr("stroke", "#282c34")
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-width", 0.15)
-        .attr("d", d3.geoPath().projection(countyProjection))
-        .on("mouseover", mouseOver)
-        .on("mouseleave", mouseLeave)
-        .on("click", mouseClick)
-        .attr("data-fips", d=>d.properties.GEOID)
-        .attr("data-population", d=>valuemap.get(d.properties.GEOID))
-        .attr("data-namelsad", d=>d.properties.NAMELSAD)
-        .attr("data-statename", d=>d.properties.STATE_NAME)
-        .attr("active", false)
-        .attr("neighbor", false)
-      .append("title")
-      .text(
-        d => `${d.properties.NAMELSAD}, ${d.properties.STATE_NAME} (${d.properties.GEOID})\n${d3.format(",.2r")(valuemap.get(d.properties.GEOID))}`
-      )
+  const getAdjacent = (geoids, targetPop)=>{
+    // Use the counties array to identify all items in the neighbors array
+    // Should end up with an array of current neighbors
+    // already unique and sorted by ascending pop
+    const neighborGeoids = getArrayNeighbors(geoids)
+    // return neighborGeoids
 
-      // Draw States
-      svg.append("g")
-        .selectAll("path")
-        .data(states.features)
-        .join("path")
-          .attr("fill", "none")
-          .attr("stroke", "#333338")
-          .attr("stroke-linejoin", "round")
-          .attr("stroke-width", 0.5)
-          .attr("d", d3.geoPath().projection(stateProjection))
-    
-  })
+    // console.log("adjacent", checkCounties(geoids, neighborGeoids, targetPop, 0))
+    return checkCounties(geoids, neighborGeoids, targetPop, 0)
+  }
 
-  // return ( svgelement )
-  // return ( 
-    // <svg 
-    //   id="geopleth" 
-    //   // ref={ref}
-    //   width={width + margin.left + margin.right} 
-    //   height={height + margin.top + margin.bottom} 
-    // /> 
-    // null
-  // )
+  // Set styles for paths
+  const countyStyle = {
+    active: {
+      fill: "green",
+      stroke: "black",
+      strokeLinejoin:"round",
+      strokeWidth:"0.15",
+    },
+    neighbor: {
+      fill: "blue",
+      stroke: "black",
+      strokeLinejoin:"round",
+      strokeWidth:"0.15",
+    },
+    inactive: {
+      fill: "white",
+      stroke: "black",
+      strokeLinejoin:"round",
+      strokeWidth:"0.15",
+    },
+  }
+
+  const activeCountyStyle = {
+    fill: "green",
+    stroke: "black",
+    strokeLinejoin:"round",
+    strokeWidth:"0.15",
+  }
+
+  const neighborCountyStyle = {
+    fill: "blue",
+    stroke: "black",
+    strokeLinejoin:"round",
+    strokeWidth:"0.15",
+  }
+
+  const inactiveCountyStyle = {
+    fill: "white",
+    stroke: "black",
+    strokeLinejoin:"round",
+    strokeWidth:"0.15",
+  }
+
+  const stateStyle = {
+    fill: "none",
+    stroke: "black",
+    strokeLinejoin:"round",
+    strokeWidth:"0.55",
+  }
+
+  // Determine which style to use
+  const selectStyle = (id)=>{
+    if (id==activeId) {
+      return activeCountyStyle
+    } else if (neighborIds.includes(id)) {
+      return neighborCountyStyle
+    }
+    return inactiveCountyStyle
+  }
+
+
+  // Mouse functions
+  const onClick = (e)=>{
+    const geoid = e.target.getAttribute('data-geoid')
+    // const pop = e.target.getAttribute('data-pop')
+    // console.log("click", geoid, pop)
+    setNeighborIds(getAdjacent([geoid], pop))
+  } 
+
+  const onRightClick = (e)=>{
+    e.preventDefault()
+    const geoid = e.target.getAttribute('data-geoid')
+    const pop = e.target.getAttribute('data-pop')
+    console.log('op', geoid, pop)
+    if (geoid == activeId) {
+      setActiveId(null)
+      setLocation(null)
+      setPop(0)
+    } else {
+      setActiveId(geoid)
+      setLocation(counties.features.filter(c=>c.properties.GEOID==geoid)[0].properties.NAMELSAD)
+      setPop(parseInt(pop))
+    }
+  }
   
+  const onMouseOver = (e)=>{
+  }
+
+  return (
+    <svg id="protopleth" style = {{ width: width, height:height }}>
+
+      {/* Counties */}
+      {counties.features.map(feature=>(
+        <Path 
+          feature={feature} 
+          style={selectStyle(feature.properties["GEOID"])} 
+          key={"ID" + feature.properties["GEOID"]} 
+          id={"ID" + feature.properties["GEOID"]}
+          geoid={feature.properties["GEOID"]}
+          pop={valuemap.get(feature.properties["GEOID"])}
+          onClick={onClick}
+          onMouseOver={onMouseOver}
+          onRightClick={onRightClick}
+        />
+      ))}
+
+
+      {/* States */}
+      {states.features.map(feature=>(
+        <Path 
+          feature={feature} 
+          style={stateStyle} 
+          key={"ID" + feature.properties["STATEFP"]}
+          id={"ID" + feature.properties["STATEFP"]} 
+          // onClick={onClick}
+          // onMouseover={onMouseover}
+        />
+      ))}
+
+    </svg>
+  )
 }
 
 

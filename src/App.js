@@ -1,7 +1,5 @@
 import './App.css'
 import * as d3 from "d3"
-import BarChart from './components/BarChart'
-import Protopleth from './components/Protopleth'
 import Geopleth from './components/Geopleth'
 import { useState, useEffect } from 'react'
 
@@ -35,32 +33,13 @@ function App() {
     return () => undefined
   }, [])
 
-  useEffect(()=>{
-    // setLoading()
-  }, [activeCounty])
+  
 
   return (
     <div class="container">
       <div id="location">{location}</div>
       <div id="pop">{pop}</div>
-      {/* { loading && <div>loading</div> } */}
-      {/* { !loading && <Geopleth 
-        topodata={topodata} 
-        countydata={countydata} 
-        statedata={statedata} 
-        popdata={popdata} 
-        setPop={setPop}
-        setLocation={setLocation}
-      /> } */}
-      {/* { !loading && <Protopleth 
-        topodata={topodata} 
-        countydata={countydata} 
-        statedata={statedata} 
-        popdata={popdata} 
-        setPop={setPop}
-        setLocation={setLocation}
-      /> } */}
-      { !loading && <Protopleth 
+      { !loading && <Geopleth 
           topodata={topodata} 
           countydata={countydata} 
           statedata={statedata} 
