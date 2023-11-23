@@ -27,6 +27,8 @@ Alaska throws a race condition if the population is greater than all of Alaska
   recurses endlessly through empty arrays once there are no more neighbors
   - solved by exiting if there are no new neighbors
 
+
+
 Can I split all "active" and "neighbor" features into their own separate topojson?
 
 can I style only the outside borders of the "neighbor" features?

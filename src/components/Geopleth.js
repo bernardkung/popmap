@@ -103,7 +103,17 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     return checkCounties(geoids, neighborGeoids, targetPop, 0)
   }
 
-  // Set styles for paths
+  // Color Scales
+  const neighborColor = d3.scaleQuantile(
+    popdata.filter(p => p.COUNTY != '000').map(p => parseInt(p.POPESTIMATE2022)),
+    d3.schemeBlues[9]
+  )
+  const inactiveColor = d3.scaleQuantile(
+    popdata.filter(p => p.COUNTY != '000').map(p => parseInt(p.POPESTIMATE2022)),
+    d3.schemeGreys[9]
+  )
+
+  // Styles
   const countyStyle = {
     active: {
       fill: "green",
@@ -125,26 +135,28 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     },
   }
 
-  const activeCountyStyle = {
+  const activeCountyStyle = (d)=> { return {
     fill: "#FFC5FC",
     stroke: "#FF2EF8",
     strokeLinejoin:"round",
     strokeWidth:"0.55",
-  }
+  }}
 
-  const neighborCountyStyle = {
-    fill: "#929FF0",
+  const neighborCountyStyle = (d)=> { return {
+    // fill: "#929FF0",
+    fill: neighborColor(valuemap.get(d.properties["GEOID"])),
     stroke: "#00EDFF",
     strokeLinejoin:"round",
     strokeWidth:"0.55",
-  }
+  }}
 
-  const inactiveCountyStyle = {
-    fill: "#D0D0D0",
+  const inactiveCountyStyle = (d)=> { return {
+    // fill: "#D0D0D0",
+    fill: inactiveColor(valuemap.get(d.properties["GEOID"])),
     stroke: "black",
     strokeLinejoin:"round",
     strokeWidth:"0.15",
-  }
+  }}
 
   const stateStyle = {
     fill: "none",
@@ -153,14 +165,16 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     strokeWidth:"0.55",
   }
 
+
+
   // Determine which style to use
-  const selectStyle = (id)=>{
-    if (id==activeId) {
-      return activeCountyStyle
-    } else if (neighborIds.includes(id)) {
-      return neighborCountyStyle
+  const selectStyle = (d)=>{
+    if (d.properties["GEOID"]==activeId) {
+      return activeCountyStyle(d)
+    } else if (neighborIds.includes(d.properties["GEOID"])) {
+      return neighborCountyStyle(d)
     }
-    return inactiveCountyStyle
+    return inactiveCountyStyle(d)
   }
 
 
@@ -196,7 +210,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
       {counties.features.map(feature=>(
         <Path 
           feature={feature} 
-          style={selectStyle(feature.properties["GEOID"])} 
+          style={selectStyle(feature)} 
           key={"ID" + feature.properties["GEOID"]} 
           id={"ID" + feature.properties["GEOID"]}
           geoid={feature.properties["GEOID"]}
