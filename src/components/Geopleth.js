@@ -104,15 +104,19 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   }
 
   // Color Scales
-  const neighborColor = d3.scaleQuantile(
-    popdata.filter(p => p.COUNTY != '000').map(p => parseInt(p.POPESTIMATE2022)),
-    d3.schemeBlues[9]
-  )
-  const inactiveColor = d3.scaleQuantile(
-    popdata.filter(p => p.COUNTY != '000').map(p => parseInt(p.POPESTIMATE2022)),
-    d3.schemeGreys[9]
-  )
-
+  // const neighborColor = d3.scaleQuantile(
+  //   popdata.filter(p => p.COUNTY != '000').map(p => parseInt(p.POPESTIMATE2022)),
+  //   d3.schemeBlues[9]
+  // )
+  // const inactiveColor = d3.scaleQuantile(
+  //   popdata.filter(p => p.COUNTY != '000').map(p => parseInt(p.POPESTIMATE2022)),
+  //   d3.schemeGreys[9]
+  // )  
+  const neighborColor = d3.scaleQuantize([1,10], d3.schemeBlues[9])
+  const inactiveColor = d3.scaleQuantize([1,10], d3.schemeGreys[9])
+  const getBaseLog = (x, base)=>{
+    return Math.log(x) / Math.log(base)
+  }
   // Styles
   const countyStyle = {
     active: {
@@ -144,7 +148,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
 
   const neighborCountyStyle = (d)=> { return {
     // fill: "#929FF0",
-    fill: neighborColor(valuemap.get(d.properties["GEOID"])),
+    fill: neighborColor(getBaseLog(valuemap.get(d.properties["GEOID"]), 10)),
     stroke: "#00EDFF",
     strokeLinejoin:"round",
     strokeWidth:"0.55",
@@ -152,7 +156,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
 
   const inactiveCountyStyle = (d)=> { return {
     // fill: "#D0D0D0",
-    fill: inactiveColor(valuemap.get(d.properties["GEOID"])),
+    fill: inactiveColor(getBaseLog(valuemap.get(d.properties["GEOID"]), 10)),
     stroke: "black",
     strokeLinejoin:"round",
     strokeWidth:"0.15",
