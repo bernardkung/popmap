@@ -18,7 +18,8 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   // Dynamic dimensions
   // const [viewsize, setViewsize] = useState([window.innerWidth, window.innerHeight])
   const [activeId, setActiveId] = useState()
-  const [neighborIds, setNeighborIds] = useState([])
+  const [neighborhood, setNeighborhood] = useState([])
+  const [neighborhoodSeed, setNeighborhoodSeed] = useState()
   const [neighborMesh, setNeighborMesh] = useState()
   
   // Define features and projections
@@ -69,7 +70,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     return neighborhoodIds
   }
 
-  function checkCounties(geoids, neighborGeoids, targetPop, totalPop) {
+  function checkNeighbors(geoids, neighborGeoids, targetPop, totalPop) {
     // Loop through each neighbor and check if target pop has been reached
     for (let i = 0; i < neighborGeoids.length; i++) {
       const geoid = neighborGeoids[i]
@@ -94,25 +95,17 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
       return geoids
     }
 
-    return checkCounties(geoids, newNeighbors, targetPop, totalPop)
+    return checkNeighbors(geoids, newNeighbors, targetPop, totalPop)
   }
 
-  function getAdjacent(geoids, targetPop) {
+  function buildNeighborhood(geoids, targetPop) {
     // Get unique neighboring geoids, sorted by population
     const neighborGeoids = getNeighbors(geoids)
 
-    return checkCounties(geoids, neighborGeoids, targetPop, 0)
+    return checkNeighbors(geoids, neighborGeoids, targetPop, 0)
   }
 
   // Color Scales
-  // const neighborColor = d3.scaleQuantile(
-  //   popdata.filter(p => p.COUNTY != '000').map(p => parseInt(p.POPESTIMATE2022)),
-  //   d3.schemeBlues[9]
-  // )
-  // const inactiveColor = d3.scaleQuantile(
-  //   popdata.filter(p => p.COUNTY != '000').map(p => parseInt(p.POPESTIMATE2022)),
-  //   d3.schemeGreys[9]
-  // )  
   const neighborColor = d3.scaleQuantize([1,10], d3.schemeBlues[9])
   const inactiveColor = d3.scaleQuantize([1,10], d3.schemeGreys[9])
   const getBaseLog = (x, base) => Math.log(x) / Math.log(base)
@@ -172,24 +165,26 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   
   // Define the outer mesh of the neighboorhood
   useEffect(()=>{
-    const neighborhoodMesh = topojson.mesh(
+    const mesh = topojson.mesh(
       countydata, countydata.objects.counties, 
       (a, b) => {
+        const aId = a.properties.GEOID
+        const bId = b.properties.GEOID
         const test = (a !== b) && (
-          (neighborIds.includes(a.properties.GEOID)) && (!neighborIds.includes(b.properties.GEOID)) ||
-          (neighborIds.includes(b.properties.GEOID)) && (!neighborIds.includes(a.properties.GEOID))
+          (neighborhood.includes(aId)) && (!neighborhood.includes(bId)) ||
+          (neighborhood.includes(bId)) && (!neighborhood.includes(aId))
         )
         return test
       }
     )
-    setNeighborMesh(neighborhoodMesh)
-  }, [neighborIds])
+    setNeighborMesh(mesh)
+  }, [neighborhood])
 
-  // Determine which style to use
+  // Determine which style to use for a path
   function selectStyle(d) {
     if (d.properties["GEOID"]==activeId) {
       return activeCountyStyle(d)
-    } else if (neighborIds.includes(d.properties["GEOID"])) {
+    } else if (neighborhood.includes(d.properties["GEOID"])) {
       return neighborCountyStyle(d)
     }
     return inactiveCountyStyle(d)
@@ -200,7 +195,8 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   const onClick = (e)=>{
     // Create a neighborhood of equivalent population
     const geoid = e.target.getAttribute('data-geoid')
-    setNeighborIds(getAdjacent([geoid], pop))
+    setNeighborhoodSeed(geoid)
+    setNeighborhood(buildNeighborhood([geoid], pop))
   } 
 
   const onRightClick = (e)=>{
