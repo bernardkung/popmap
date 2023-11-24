@@ -169,7 +169,29 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     strokeWidth:"0.55",
   }
 
+  
+  // Define the outer mesh of the neighboorhood
+  useEffect(()=>{
+    console.log("Looking for IDS in:", neighborIds)
 
+    const neighborhoodMesh = topojson.mesh(
+      countydata, countydata.objects.counties, 
+      (a, b) => {
+        const test = (a !== b) && (
+          (neighborIds.includes(a.properties.GEOID)) && (!neighborIds.includes(b.properties.GEOID)) ||
+          (neighborIds.includes(b.properties.GEOID)) && (!neighborIds.includes(a.properties.GEOID))
+        )
+
+        if (test) {
+          console.log("border", a, b)
+        }
+        return test
+      }
+    )
+
+    console.log("mesh", neighborhoodMesh)
+    setNeighborMesh(neighborhoodMesh)
+  }, [neighborIds])
 
   // Determine which style to use
   const selectStyle = (d)=>{
@@ -225,6 +247,17 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
         />
       ))}
 
+      {/* Neighborhood mesh */}
+      <path 
+        d={geoGenerator(neighborMesh)}
+        style={{
+            fill: "green",
+            stroke: "green",
+            strokeLinejoin:"round",
+            strokeWidth:"0.15",
+          }}
+        id={"mesh"}
+    />    
 
       {/* States */}
       {states.features.map(feature=>(
