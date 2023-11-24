@@ -8,7 +8,6 @@ import Path from './Path'
 const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLocation }) => {
 // Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
 
-  console.log(countydata)
 
   // Set the dimensions and margins of the graph
   const margin = { top: 0, right: 60, bottom: 60, left: 160 }
@@ -162,6 +161,12 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     strokeWidth:"0.55",
   }
 
+  // Build a new neighborhood after a new seed is set
+  useEffect(()=>{
+    if (neighborhoodSeed) {
+      setNeighborhood(buildNeighborhood([neighborhoodSeed], pop))
+    }
+  }, [neighborhoodSeed, activeId])
   
   // Define the outer mesh of the neighboorhood
   useEffect(()=>{
@@ -196,7 +201,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     // Create a neighborhood of equivalent population
     const geoid = e.target.getAttribute('data-geoid')
     setNeighborhoodSeed(geoid)
-    setNeighborhood(buildNeighborhood([geoid], pop))
+    // setNeighborhood(buildNeighborhood([geoid], pop))
   } 
 
   const onRightClick = (e)=>{
