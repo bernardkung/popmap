@@ -19,6 +19,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   // const [viewsize, setViewsize] = useState([window.innerWidth, window.innerHeight])
   const [activeId, setActiveId] = useState()
   const [neighborIds, setNeighborIds] = useState([])
+  const [neighborMesh, setNeighborMesh] = useState()
   
   // Define features and projections
   const counties = topojson.feature(countydata, countydata.objects.counties)
@@ -33,7 +34,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
 
   
 
-  const getArrayNeighbors = (geoids)=>{
+  function getNeighbors(geoids) {
     const getcontigs = geoids => {
       return geoids.map(geoid => {
         const index = neighbors[ids.indexOf(geoid)]
@@ -68,7 +69,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     return neighborhoodIds
   }
 
-  const checkCounties = (geoids, neighborGeoids, targetPop, totalPop)=>{
+  function checkCounties(geoids, neighborGeoids, targetPop, totalPop) {
     // Loop through each neighbor and check if target pop has been reached
     for (let i = 0; i < neighborGeoids.length; i++) {
       const geoid = neighborGeoids[i]
@@ -85,7 +86,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     }
     // If all counties have been checked
     // generate a new set of neighboring counties
-    const newNeighbors = getArrayNeighbors(geoids)
+    const newNeighbors = getNeighbors(geoids)
     
     // Second exit condition for error handling
     if (newNeighbors.length==0) {
@@ -96,9 +97,9 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     return checkCounties(geoids, newNeighbors, targetPop, totalPop)
   }
 
-  const getAdjacent = (geoids, targetPop)=>{
+  function getAdjacent(geoids, targetPop) {
     // Get unique neighboring geoids, sorted by population
-    const neighborGeoids = getArrayNeighbors(geoids)
+    const neighborGeoids = getNeighbors(geoids)
 
     return checkCounties(geoids, neighborGeoids, targetPop, 0)
   }
@@ -114,9 +115,8 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   // )  
   const neighborColor = d3.scaleQuantize([1,10], d3.schemeBlues[9])
   const inactiveColor = d3.scaleQuantize([1,10], d3.schemeGreys[9])
-  const getBaseLog = (x, base)=>{
-    return Math.log(x) / Math.log(base)
-  }
+  const getBaseLog = (x, base) => Math.log(x) / Math.log(base)
+
   // Styles
   const countyStyle = {
     active: {
@@ -143,13 +143,13 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     fill: "#FFC5FC",
     stroke: "#FF2EF8",
     strokeLinejoin:"round",
-    strokeWidth:"0.55",
+    strokeWidth:"2",
   }}
 
   const neighborCountyStyle = (d)=> { return {
     // fill: "#929FF0",
     fill: neighborColor(getBaseLog(valuemap.get(d.properties["GEOID"]), 10)),
-    stroke: "#00EDFF",
+    stroke: "#25B0BB",
     strokeLinejoin:"round",
     strokeWidth:"0.55",
   }}
@@ -172,8 +172,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   
   // Define the outer mesh of the neighboorhood
   useEffect(()=>{
-    console.log("Looking for IDS in:", neighborIds)
-
     const neighborhoodMesh = topojson.mesh(
       countydata, countydata.objects.counties, 
       (a, b) => {
@@ -181,20 +179,14 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
           (neighborIds.includes(a.properties.GEOID)) && (!neighborIds.includes(b.properties.GEOID)) ||
           (neighborIds.includes(b.properties.GEOID)) && (!neighborIds.includes(a.properties.GEOID))
         )
-
-        if (test) {
-          console.log("border", a, b)
-        }
         return test
       }
     )
-
-    console.log("mesh", neighborhoodMesh)
     setNeighborMesh(neighborhoodMesh)
   }, [neighborIds])
 
   // Determine which style to use
-  const selectStyle = (d)=>{
+  function selectStyle(d) {
     if (d.properties["GEOID"]==activeId) {
       return activeCountyStyle(d)
     } else if (neighborIds.includes(d.properties["GEOID"])) {
@@ -206,6 +198,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
 
   // Mouse functions
   const onClick = (e)=>{
+    // Create a neighborhood of equivalent population
     const geoid = e.target.getAttribute('data-geoid')
     setNeighborIds(getAdjacent([geoid], pop))
   } 
@@ -214,15 +207,20 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     e.preventDefault()
     const geoid = e.target.getAttribute('data-geoid')
     const pop = e.target.getAttribute('data-pop')
-    console.log('op', geoid, pop)
+    // If Active County already exists
     if (geoid == activeId) {
+      // Clear Active County
       setActiveId(null)
       setLocation(null)
-      setPop(0)
+      setPop(0)  
+    // Clear Neighborhood
+
     } else {
+      // Set a new Active County
       setActiveId(geoid)
       setLocation(counties.features.filter(c=>c.properties.GEOID==geoid)[0].properties.NAMELSAD)
       setPop(parseInt(pop))
+      // Re-calculate neighborhood if a neighborhood already exists
     }
   }
   
@@ -251,10 +249,10 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
       <path 
         d={geoGenerator(neighborMesh)}
         style={{
-            fill: "green",
-            stroke: "green",
+            fill: "none",
+            stroke: "#00EDFF",
             strokeLinejoin:"round",
-            strokeWidth:"0.15",
+            strokeWidth:"2",
           }}
         id={"mesh"}
     />    
