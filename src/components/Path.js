@@ -17,7 +17,6 @@ const Path = ({ feature, style, onClick, id, geoid, pop, onMouseOver, onRightCli
         data-pop={pop}
         onMouseOver={onMouseOver}
         onContextMenu={onRightClick}
-        text={geoid}
     />    
   )
 }
