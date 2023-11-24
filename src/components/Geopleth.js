@@ -8,8 +8,6 @@ import Path from './Path'
 const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLocation }) => {
 // Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
 
-  console.log(countydata)
-
   // Set the dimensions and margins of the graph
   const margin = { top: 0, right: 60, bottom: 60, left: 160 }
   const width = 900
@@ -19,6 +17,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   // const [viewsize, setViewsize] = useState([window.innerWidth, window.innerHeight])
   const [activeId, setActiveId] = useState()
   const [neighborIds, setNeighborIds] = useState([])
+  const [neighborMesh, setNeighborMesh] = useState()
   
   // Define features and projections
   const counties = topojson.feature(countydata, countydata.objects.counties)
@@ -102,6 +101,29 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
 
     return checkCounties(geoids, neighborGeoids, targetPop, 0)
   }
+
+  // Define the outer mesh of the neighboorhood
+  useEffect(()=>{
+    console.log("Looking for IDS in:", neighborIds)
+
+    const neighborhoodMesh = topojson.mesh(
+      countydata, countydata.objects.counties, 
+      (a, b) => {
+        const test = (a !== b) && (
+          (neighborIds.includes(a.properties.GEOID)) && (!neighborIds.includes(b.properties.GEOID)) ||
+          (neighborIds.includes(b.properties.GEOID)) && (!neighborIds.includes(a.properties.GEOID))
+        )
+
+        if (test) {
+          console.log("border", a, b)
+        }
+        return test
+      }
+    )
+
+    console.log("mesh", neighborhoodMesh)
+    setNeighborMesh(neighborhoodMesh)
+  }, [neighborIds])
 
   // Color Scales
   // const neighborColor = d3.scaleQuantile(
@@ -192,7 +214,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     e.preventDefault()
     const geoid = e.target.getAttribute('data-geoid')
     const pop = e.target.getAttribute('data-pop')
-    console.log('op', geoid, pop)
+    console.log('setting an active id:', "geoid", geoid, "pop", pop)
     if (geoid == activeId) {
       setActiveId(null)
       setLocation(null)
@@ -225,6 +247,17 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
         />
       ))}
 
+      {/* Draw neighborhood mesh */}
+      <path 
+        d={geoGenerator(neighborMesh)}
+        style={{
+            fill: "green",
+            stroke: "green",
+            strokeLinejoin:"round",
+            strokeWidth:"0.15",
+          }}
+        id={"mesh"}
+    />    
 
       {/* States */}
       {states.features.map(feature=>(
