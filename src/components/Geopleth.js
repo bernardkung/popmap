@@ -90,7 +90,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     
     // Second exit condition for error handling
     if (newNeighbors.length==0) {
-      console.log("exiting", geoids, "target:", targetPop, "total:", totalPop )
       return geoids
     }
 
