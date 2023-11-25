@@ -1,16 +1,17 @@
 
-const Tooltip = ({interactionData}) => {
-  if (!interactionData) { return null }
+const Tooltip = ({tooltipData}) => {
+  if (!tooltipData) { return null }
 
-  console.log(interactionData.box)
-  const { xPos, yPos, width, height } = interactionData.box
+  console.log(tooltipData.properties)
+  // const [ xPos, yPos, width, height ] = tooltipData.box
+  // console.log("X", tooltipData.box.x - 160)
 
   return (
     <div className="tooltip" style={{
-      left: xPos,
-      top: yPos
+      left: tooltipData.box.x - 110,
+      top: tooltipData.box.y + 60,
     }}>
-      {interactionData.properties.GEOID} {interactionData.properties.NAMELSAD}
+      {tooltipData.properties.GEOID} {tooltipData.properties.NAMELSAD}
     </div>
   )
 }

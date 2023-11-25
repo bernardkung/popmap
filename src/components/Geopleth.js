@@ -3,10 +3,9 @@ import { render } from 'react-dom'
 import * as topojson from "topojson-client"
 import { useState, useEffect, useRef } from "react"
 import Path from './Path'
-import Tooltip from './Tooltip'
 
 
-const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLocation }) => {
+const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLocation, setTooltipData }) => {
 // Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
 
 
@@ -21,8 +20,8 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   const [neighborhood, setNeighborhood] = useState([])
   const [neighborhoodSeed, setNeighborhoodSeed] = useState()
   const [neighborMesh, setNeighborMesh] = useState()
-  // const [interactionData, setInteractiondata] = useState<InteractionData | null>(null);
-  const [interactionData, setInteractionData] = useState(null)
+  // const [tooltipData, setTooltipData] = useState<tooltipData | null>(null);
+  // const [tooltipData, setTooltipData] = useState(null)
   // const [counties, setCounties]
   // const [states, setCounties]
   // const [projection, setProjection] = useState(d3.geoAlbersUsa())
@@ -247,20 +246,19 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   const onMouseEnter = (e)=>{
     const properties = JSON.parse(e.target.getAttribute("data-properties"))
     console.log(e.target.getBBox())
-    setInteractionData({
+    setTooltipData({
       "properties":properties,
       "box":e.target.getBBox(),
     })
   }
 
   const onMouseLeave = (e)=>{
-    setInteractionData(null)
+    setTooltipData(null)
   }
 
   return (
     <div>
       {/* Tooltip */}
-      <Tooltip interactionData={interactionData} />
 
       <svg id="protopleth" style = {{ width: width, height:height }}>
 

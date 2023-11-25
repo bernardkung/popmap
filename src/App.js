@@ -1,6 +1,7 @@
 import './App.css'
 import * as d3 from "d3"
 import Geopleth from './components/Geopleth'
+import Tooltip from './components/Tooltip'
 import { useState, useEffect } from 'react'
 
 function App() {
@@ -14,9 +15,16 @@ function App() {
   const [location, setLocation] = useState("none")
   const [pop, setPop] = useState(0)
   
+  const [tooltipData, setTooltipData] = useState()
   const [activeCounty, setActiveCounty] = useState()
   const [neighbors, setNeighbors] = useState([])
 
+  
+  // Set the dimensions and margins of the graph
+  const margin = { top: 0, right: 60, bottom: 60, left: 160 }
+  const width = 900
+  const height = 700
+  
   // On Load
   useEffect(()=>{
     Promise.all([
@@ -41,8 +49,14 @@ function App() {
 
   return (
     <div class="container">
-      <div id="location">{location}</div>
-      <div id="pop">{pop}</div>
+
+      <div className="header">
+        <div id="location">{location}</div>
+        <div id="pop">{pop}</div>
+      </div>
+
+      <Tooltip tooltipData={tooltipData} />
+
       { !loading && <Geopleth 
           topodata={topodata} 
           countydata={countydata} 
@@ -51,15 +65,8 @@ function App() {
           pop={pop}
           setPop={setPop}
           setLocation={setLocation}
+          setTooltipData={setTooltipData}
         /> }
-        {/* <Protopleth 
-          topodata={topodata} 
-          countydata={countydata} 
-          statedata={statedata} 
-          popdata={popdata} 
-          setPop={setPop}
-          setLocation={setLocation}
-        /> */}
     </div>
   )
 }
