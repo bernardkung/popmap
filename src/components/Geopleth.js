@@ -246,58 +246,63 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   
   const onMouseEnter = (e)=>{
     const properties = JSON.parse(e.target.getAttribute("data-properties"))
-    setInteractionData(properties)
+    console.log(e.target.getBBox())
+    setInteractionData({
+      "properties":properties,
+      "box":e.target.getBBox(),
+    })
   }
 
-  const onMouseExit = (e)=>{
+  const onMouseLeave = (e)=>{
     setInteractionData(null)
   }
 
   return (
-    <svg id="protopleth" style = {{ width: width, height:height }}>
-
-      {/* Counties */}
-      {counties.features.map(feature=>(
-        <Path 
-          feature={feature} 
-          style={selectStyle(feature)} 
-          key={"ID" + feature.properties["GEOID"]} 
-          id={"ID" + feature.properties["GEOID"]}
-          geoid={feature.properties["GEOID"]}
-          pop={valuemap.get(feature.properties["GEOID"])}
-          onClick={onClick}
-          onMouseEnter={onMouseEnter}
-          onMouseExit={onMouseExit}
-          onRightClick={onRightClick}
-        />
-      ))}
-
-      {/* Neighborhood mesh */}
-      <path 
-        d={geoGenerator(neighborMesh)}
-        style={{
-            fill: "none",
-            stroke: "#00EDFF",
-            strokeLinejoin:"round",
-            strokeWidth:"2",
-          }}
-        id={"mesh"}
-      />    
-
-      {/* States */}
-      {states.features.map(feature=>(
-        <Path 
-          feature={feature} 
-          style={stateStyle} 
-          key={"ID" + feature.properties["STATEFP"]}
-          id={"ID" + feature.properties["STATEFP"]} 
-        />
-      ))}
-
+    <div>
       {/* Tooltip */}
       <Tooltip interactionData={interactionData} />
 
-    </svg>
+      <svg id="protopleth" style = {{ width: width, height:height }}>
+
+        {/* Counties */}
+        {counties.features.map(feature=>(
+          <Path 
+            feature={feature} 
+            style={selectStyle(feature)} 
+            key={"ID" + feature.properties["GEOID"]} 
+            id={"ID" + feature.properties["GEOID"]}
+            geoid={feature.properties["GEOID"]}
+            pop={valuemap.get(feature.properties["GEOID"])}
+            onClick={onClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onRightClick={onRightClick}
+          />
+        ))}
+
+        {/* Neighborhood mesh */}
+        <path 
+          d={geoGenerator(neighborMesh)}
+          style={{
+              fill: "none",
+              stroke: "#00EDFF",
+              strokeLinejoin:"round",
+              strokeWidth:"2",
+            }}
+          id={"mesh"}
+        />    
+
+        {/* States */}
+        {states.features.map(feature=>(
+          <Path 
+            feature={feature} 
+            style={stateStyle} 
+            key={"ID" + feature.properties["STATEFP"]}
+            id={"ID" + feature.properties["STATEFP"]} 
+          />
+        ))}
+      </svg>
+  </div>
   )
 }
 
