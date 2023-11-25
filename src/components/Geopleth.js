@@ -262,7 +262,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
           style={selectStyle(feature)} 
           key={"ID" + feature.properties["GEOID"]} 
           id={"ID" + feature.properties["GEOID"]}
-          geoid={feature.properties["GEOID"]}
           pop={valuemap.get(feature.properties["GEOID"])}
           onClick={onClick}
           onMouseEnter={onMouseEnter}
