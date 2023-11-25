@@ -18,7 +18,7 @@ const Path = ({ feature, style, id, pop, onClick, onRightClick, onMouseEnter, on
         id={id}
         data-pop={pop}
         {...attributes}
-        onMouseEnter={onMouseEnter}
+        onMouseEnter={mouseTest}
         onMouseExit={onMouseExit}
         onContextMenu={onRightClick}
     />    
