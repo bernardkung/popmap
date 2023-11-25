@@ -10,7 +10,7 @@ const Tooltip = ({interactionData}) => {
       left: xPos,
       top: yPos
     }}>
-      {interactionData.properties.NAMELSAD}
+      {interactionData.properties.GEOID} {interactionData.properties.NAMELSAD}
     </div>
   )
 }
