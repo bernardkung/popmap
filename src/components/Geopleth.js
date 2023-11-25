@@ -20,7 +20,13 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   const [neighborhood, setNeighborhood] = useState([])
   const [neighborhoodSeed, setNeighborhoodSeed] = useState()
   const [neighborMesh, setNeighborMesh] = useState()
-  
+  // const [interactionData, setInteractiondata] = useState<InteractionData | null>(null);
+  const [interactionData, setInteractionData] = useState(null)
+  // const [counties, setCounties]
+  // const [states, setCounties]
+  // const [projection, setProjection] = useState(d3.geoAlbersUsa())
+  // const [counties, setCounties]
+
   // Define features and projections
   const counties = topojson.feature(countydata, countydata.objects.counties)
   const states = topojson.feature(statedata, statedata.objects.states)
@@ -31,8 +37,20 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   const ids = counties.features.map(d => d.properties.GEOID)
   // Mapping function to crosswalk population and topojson
   const valuemap = new Map(popdata.map(p => [p.STATE + p.COUNTY, p.POPESTIMATE2022]));
+  useEffect(()=>{
+  }, [])
 
   
+  // Find counties with no neighbors
+  const neighborless = []
+  // for (let n=0; n<neighbors.length; n++) {
+  //   // console.log(neighbors[n])
+  //   if (neighbors[n].length==0) {
+  //     neighborless.push(ids[n])
+  //   }
+  // }
+  // console.log(neighbors)
+  // console.log(neighborless)
 
   function getNeighbors(geoids) {
     const getcontigs = geoids => {
@@ -207,6 +225,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     e.preventDefault()
     const geoid = e.target.getAttribute('data-geoid')
     const pop = e.target.getAttribute('data-pop')
+    const countyName = counties.features.filter(c=>c.properties.GEOID==geoid)[0].properties.NAMELSAD
     // If Active County already exists
     if (geoid == activeId) {
       // Clear Active County
@@ -218,13 +237,19 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     } else {
       // Set a new Active County
       setActiveId(geoid)
-      setLocation(counties.features.filter(c=>c.properties.GEOID==geoid)[0].properties.NAMELSAD)
+      setLocation(`${countyName} (${geoid})`)
       setPop(parseInt(pop))
       // Re-calculate neighborhood if a neighborhood already exists
     }
   }
   
-  const onMouseOver = (e)=>{
+  const onMouseEnter = (e)=>{
+    console.log(e.target)
+    setInteractionData(e.target)
+  }
+
+  const onMouseExit = (e)=>{
+
   }
 
   return (
@@ -240,7 +265,8 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
           geoid={feature.properties["GEOID"]}
           pop={valuemap.get(feature.properties["GEOID"])}
           onClick={onClick}
-          onMouseOver={onMouseOver}
+          onMouseEnter={onMouseEnter}
+          onMouseExit={onMouseExit}
           onRightClick={onRightClick}
         />
       ))}

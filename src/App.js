@@ -10,8 +10,10 @@ function App() {
   const [statedata, setStatedata] = useState()
   const [popdata, setPopdata] = useState()
   const [loading, setLoading] = useState(true)
+
   const [location, setLocation] = useState("none")
   const [pop, setPop] = useState(0)
+  
   const [activeCounty, setActiveCounty] = useState()
   const [neighbors, setNeighbors] = useState([])
 
@@ -28,6 +30,8 @@ function App() {
       setCountydata(countyjson)
       setStatedata(statejson)
       setPopdata(popcsv)
+      // Manually connect AK and HI to the 48 contiguous states
+
       setLoading(false)
     })
     return () => undefined
