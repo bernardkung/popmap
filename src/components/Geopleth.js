@@ -2,8 +2,9 @@ import * as d3 from "d3";
 import { render } from 'react-dom'
 import * as topojson from "topojson-client"
 import { useState, useEffect, useRef } from "react"
-import geoAlbersUsaPr  from "./geoAlbersUsaPr"
 import Path from './Path'
+import Tooltip from './Tooltip'
+
 
 const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLocation }) => {
 // Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
@@ -244,12 +245,12 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   }
   
   const onMouseEnter = (e)=>{
-    console.log(e.target)
-    setInteractionData(e.target)
+    const properties = JSON.parse(e.target.getAttribute("data-properties"))
+    setInteractionData(properties)
   }
 
   const onMouseExit = (e)=>{
-
+    setInteractionData(null)
   }
 
   return (
@@ -262,6 +263,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
           style={selectStyle(feature)} 
           key={"ID" + feature.properties["GEOID"]} 
           id={"ID" + feature.properties["GEOID"]}
+          geoid={feature.properties["GEOID"]}
           pop={valuemap.get(feature.properties["GEOID"])}
           onClick={onClick}
           onMouseEnter={onMouseEnter}
@@ -280,7 +282,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
             strokeWidth:"2",
           }}
         id={"mesh"}
-    />    
+      />    
 
       {/* States */}
       {states.features.map(feature=>(
@@ -291,6 +293,9 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
           id={"ID" + feature.properties["STATEFP"]} 
         />
       ))}
+
+      {/* Tooltip */}
+      <Tooltip interactionData={interactionData} />
 
     </svg>
   )

@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-const Path = ({ feature, style, id, pop, onClick, onRightClick, onMouseEnter, onMouseExit}) => {
+const Path = ({ feature, style, geoid, id, pop, onClick, onRightClick, onMouseEnter, onMouseExit}) => {
   
   const projection = d3.geoAlbersUsa()
   const geoGenerator = d3.geoPath()
@@ -10,6 +10,7 @@ const Path = ({ feature, style, id, pop, onClick, onRightClick, onMouseEnter, on
     return {...acc, ["data-" + key.toLowerCase()] : val}
   }, {})
 
+
   return (  
     <path 
         d={geoGenerator(feature)}
@@ -17,8 +18,10 @@ const Path = ({ feature, style, id, pop, onClick, onRightClick, onMouseEnter, on
         onClick={onClick}
         id={id}
         data-pop={pop}
-        {...attributes}
-        onMouseEnter={mouseTest}
+        data-geoid={geoid}
+        // {...attributes}
+        data-properties={JSON.stringify(feature.properties)}
+        onMouseEnter={onMouseEnter}
         onMouseExit={onMouseExit}
         onContextMenu={onRightClick}
     />    
