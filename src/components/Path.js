@@ -6,7 +6,14 @@ const Path = ({ feature, style, id, geoid, pop, onClick, onRightClick, onMouseEn
   const projection = d3.geoAlbersUsa()
   const geoGenerator = d3.geoPath()
     .projection(projection)
-  // console.log(feature.properties)
+
+  const properties = feature.properties
+
+  console.log(Object.keys({...properties}).map((key)=>(
+      {["DATA-" + key]: feature.properties[key]}
+    )).reduce(
+      (obj, item) => Object.assign(obj, { [item.key]: item.value }), {})
+  )
 
   const objectMap = (obj, fn) =>
   Object.fromEntries(
@@ -16,14 +23,24 @@ const Path = ({ feature, style, id, geoid, pop, onClick, onRightClick, onMouseEn
   )
   
   const keys = Object.keys(feature.properties)
-  const attributes = keys.map((key)=>{return {["DATA-" + key]: feature.properties[key]}})
+  const attributes = keys.map((key)=>(
+    {["DATA-" + key]: feature.properties[key]}
+  ))
   
   // Object.keys(feature.properties).forEach((key)=>{
   //   // console.log({["data-" + key] : feature.properties[key]})
   //   return {["data-" + key] : feature.properties[key]}
   // })
 
-  console.log("attr", attributes)
+  // Start with an object
+  // Create a new object
+  // Keys have "data-" prepended
+  // Values are the same
+
+  function mouseTest() {
+    const props = feature.properties
+    console.log(props)
+  }
 
   return (  
     <path 
@@ -33,8 +50,8 @@ const Path = ({ feature, style, id, geoid, pop, onClick, onRightClick, onMouseEn
         id={id}
         data-geoid={geoid}
         data-pop={pop}
-        {...attributes}
-        onMouseEnter={onMouseEnter}
+        // {...attributes}
+        onMouseEnter={mouseTest}
         onMouseExit={onMouseExit}
         onContextMenu={onRightClick}
     />    
