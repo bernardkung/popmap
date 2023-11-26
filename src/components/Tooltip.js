@@ -2,7 +2,7 @@
 const Tooltip = ({tooltipData}) => {
   if (!tooltipData) { return null }
 
-  console.log(tooltipData.properties)
+  // console.log(tooltipData.properties)
   // const [ xPos, yPos, width, height ] = tooltipData.box
   // console.log("X", tooltipData.box.x - 160)
 
