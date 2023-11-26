@@ -41,40 +41,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   }, [])
 
   
-  // Find counties with no neighbors
-  const neighborless = []
-  for (let n=0; n<neighbors.length; n++) {
-    // console.log(neighbors[n])
-    if (neighbors[n].length==0) {
-      console.log(n, ids[n])
-      neighborless.push([n, ids[n]])
-    }
-  }
-  
-  console.log(neighborless)
-  function lookupNeighbors(id) {
-    const index = ids.indexOf(id)
-    const neigh = neighbors[index]
-    console.log(id, index, neigh)
-  }
-
-  const lookupCounty = (id) => {
-    // console.log(counties)
-    counties.features.forEach(county=>{
-      if (county.properties.GEOID==id) {console.log(county.properties)}
-    })
-  }
-
-  console.log(neighbors.length)
-  // Find 15001 Hawaii County
-  const hiArray = ['15001', '15003', '15007', '15009']
-  hiArray.forEach((hid)=>lookupNeighbors(hid))
-
-  const foo = '2365'
-  const bar = ids[foo]
-  console.log(foo, bar)
-  lookupNeighbors(bar)
-  lookupCounty(bar)
 
   function getNeighbors(geoids) {
     const getcontigs = geoids => {
