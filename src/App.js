@@ -74,6 +74,7 @@ function App() {
             setLocation={setLocation}
             setTooltipData={setTooltipData}
             setActiveCounty={setActiveCounty}
+            setNeighbors={setNeighbors}
           /> }
 
       </div>

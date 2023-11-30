@@ -5,7 +5,10 @@ import { useState, useEffect, useRef } from "react"
 import Path from './Path'
 
 
-const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLocation, setTooltipData, setActiveCounty }) => {
+const Geopleth = ({ 
+  topodata, countydata, statedata, popdata, pop, setPop, 
+  setLocation, setTooltipData, setActiveCounty, setNeighbors,
+}) => {
 // Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
 
 
@@ -113,6 +116,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   
   // Define the outer mesh of the neighboorhood
   useEffect(()=>{
+    console.log("neighborhood", neighborhood)
     const mesh = topojson.mesh(
       countydata, countydata.objects.counties, 
       (a, b) => {
@@ -144,7 +148,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     const countyName = counties.features.filter(c=>c.properties.GEOID==geoid)[0].properties.NAMELSAD
     // If Active County already exists
     
-    console.log(e.target.getAttribute("data-properties"))
+    console.log(countydata)
 
     if (geoid == activeId) {
       // Clear Active County
@@ -152,8 +156,8 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
       setActiveCounty(null)
       setLocation(null)
       setPop(0)  
-      
-
+      // Clear Neighborhood
+      setNeighborhoodSeed(null)
     } else {
       // Set a new Active County
       setActiveId(geoid)
