@@ -31,10 +31,8 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   const ids = counties.features.map(d => d.properties.GEOID)
   // Mapping function to crosswalk population and topojson
   const valuemap = new Map(popdata.map(p => [p.STATE + p.COUNTY, p.POPESTIMATE2022]));
-  useEffect(()=>{
-  }, [])
 
-  
+    
 
   function getNeighbors(geoids) {
     const getcontigs = geoids => {
