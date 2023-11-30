@@ -20,12 +20,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   const [neighborhood, setNeighborhood] = useState([])
   const [neighborhoodSeed, setNeighborhoodSeed] = useState()
   const [neighborMesh, setNeighborMesh] = useState()
-  // const [tooltipData, setTooltipData] = useState<tooltipData | null>(null);
-  // const [tooltipData, setTooltipData] = useState(null)
-  // const [counties, setCounties]
-  // const [states, setCounties]
-  // const [projection, setProjection] = useState(d3.geoAlbersUsa())
-  // const [counties, setCounties]
 
   // Define features and projections
   const counties = topojson.feature(countydata, countydata.objects.counties)

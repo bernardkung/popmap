@@ -6,10 +6,6 @@ const Path = ({
   type, status, valuemap,
   onClick, onRightClick, onMouseEnter, onMouseLeave
 }) => {
-  
-  // const projection = d3.geoAlbersUsa()
-  // const geoGenerator = d3.geoPath()
-  //   .projection(projection)
 
   // Color Scales
   const neighborColor = d3.scaleQuantize([1,10], d3.schemeBlues[9])
@@ -47,9 +43,6 @@ const Path = ({
   }
 
   const properties = JSON.stringify({...feature.properties, POPESTIMATE2022: pop ? pop : null })
-  // const attributes = Object.entries(feature.properties).reduce((acc, [key, val])=>{
-  //   return {...acc, ["data-" + key.toLowerCase()] : val}
-  // }, {})
 
   return (  
     <path 
