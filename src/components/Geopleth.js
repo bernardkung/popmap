@@ -193,14 +193,14 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
   }, [neighborhood])
 
   // Determine which style to use for a path
-  function selectStyle(d) {
-    if (d.properties["GEOID"]==activeId) {
-      return activeCountyStyle(d)
-    } else if (neighborhood.includes(d.properties["GEOID"])) {
-      return neighborCountyStyle(d)
-    }
-    return inactiveCountyStyle(d)
-  }
+  // function selectStyle(d) {
+  //   if (d.properties["GEOID"]==activeId) {
+  //     return activeCountyStyle(d)
+  //   } else if (neighborhood.includes(d.properties["GEOID"])) {
+  //     return neighborCountyStyle(d)
+  //   }
+  //   return inactiveCountyStyle(d)
+  // }
 
 
   // Mouse functions
@@ -250,13 +250,21 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     <div>
       {/* Tooltip */}
 
-      <svg id="protopleth" style = {{ width: width, height:height }}>
+      <svg id="choropleth" style = {{ width: width, height:height }}>
+
 
         {/* Counties */}
         {counties.features.map(feature=>(
           <Path 
             feature={feature} 
-            style={selectStyle(feature)} 
+            type={"county"}
+            status={ activeId==feature.properties['GEOID'] 
+              ? "active" 
+              : neighborhood.includes(feature.properties['GEOID'])
+                ? "neighbor"
+                : "inactive"
+            }
+            // style={selectStyle(feature)}
             key={"ID" + feature.properties["GEOID"]} 
             id={"ID" + feature.properties["GEOID"]}
             geoid={feature.properties["GEOID"]}
@@ -265,6 +273,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             onRightClick={onRightClick}
+            valuemap={valuemap}
           />
         ))}
 
@@ -284,9 +293,12 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
         {states.features.map(feature=>(
           <Path 
             feature={feature} 
+            type={"state"}
+            status={"state"}
             style={stateStyle} 
             key={"ID" + feature.properties["STATEFP"]}
             id={"ID" + feature.properties["STATEFP"]} 
+            valuemap={valuemap}
           />
         ))}
       </svg>
