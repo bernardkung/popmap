@@ -2,7 +2,7 @@ import * as d3 from "d3";
 
 const Path = ({ 
   feature, pop, geoid, id, 
-  style, type, status, valuemap,
+  type, status, valuemap,
   onClick, onRightClick, onMouseEnter, onMouseLeave
 }) => {
   
@@ -47,36 +47,6 @@ const Path = ({
       strokeLinejoin:"round",
       strokeWidth:"0.55",
     }}
-  }
-
-  const activeCountyStyle = (d)=> { return {
-    fill: "#FFC5FC",
-    stroke: "#FF2EF8",
-    strokeLinejoin:"round",
-    strokeWidth:"2",
-  }}
-
-  const neighborCountyStyle = (d)=> { return {
-    // fill: "#929FF0",
-    fill: neighborColor(getBaseLog(valuemap.get(d.properties["GEOID"]), 10)),
-    stroke: "#25B0BB",
-    strokeLinejoin:"round",
-    strokeWidth:"0.55",
-  }}
-
-  const inactiveCountyStyle = (d)=> { return {
-    // fill: "#D0D0D0",
-    fill: inactiveColor(getBaseLog(valuemap.get(d.properties["GEOID"]), 10)),
-    stroke: "black",
-    strokeLinejoin:"round",
-    strokeWidth:"0.15",
-  }}
-
-  const stateStyle = {
-    fill: "none",
-    stroke: "black",
-    strokeLinejoin:"round",
-    strokeWidth:"0.55",
   }
 
   console.log(status, type, styles[type][status])

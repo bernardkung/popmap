@@ -111,62 +111,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     return checkNeighbors(geoids, neighborGeoids, targetPop, 0)
   }
 
-  // Color Scales
-  const neighborColor = d3.scaleQuantize([1,10], d3.schemeBlues[9])
-  const inactiveColor = d3.scaleQuantize([1,10], d3.schemeGreys[9])
-  const getBaseLog = (x, base) => Math.log(x) / Math.log(base)
-
-  // Styles
-  const countyStyle = {
-    active: {
-      fill: "green",
-      stroke: "black",
-      strokeLinejoin:"round",
-      strokeWidth:"0.15",
-    },
-    neighbor: {
-      fill: "blue",
-      stroke: "black",
-      strokeLinejoin:"round",
-      strokeWidth:"0.15",
-    },
-    inactive: {
-      fill: "white",
-      stroke: "black",
-      strokeLinejoin:"round",
-      strokeWidth:"0.15",
-    },
-  }
-
-  const activeCountyStyle = (d)=> { return {
-    fill: "#FFC5FC",
-    stroke: "#FF2EF8",
-    strokeLinejoin:"round",
-    strokeWidth:"2",
-  }}
-
-  const neighborCountyStyle = (d)=> { return {
-    // fill: "#929FF0",
-    fill: neighborColor(getBaseLog(valuemap.get(d.properties["GEOID"]), 10)),
-    stroke: "#25B0BB",
-    strokeLinejoin:"round",
-    strokeWidth:"0.55",
-  }}
-
-  const inactiveCountyStyle = (d)=> { return {
-    // fill: "#D0D0D0",
-    fill: inactiveColor(getBaseLog(valuemap.get(d.properties["GEOID"]), 10)),
-    stroke: "black",
-    strokeLinejoin:"round",
-    strokeWidth:"0.15",
-  }}
-
-  const stateStyle = {
-    fill: "none",
-    stroke: "black",
-    strokeLinejoin:"round",
-    strokeWidth:"0.55",
-  }
 
   // Build a new neighborhood after a new seed is set
   useEffect(()=>{
@@ -192,15 +136,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     setNeighborMesh(mesh)
   }, [neighborhood])
 
-  // Determine which style to use for a path
-  // function selectStyle(d) {
-  //   if (d.properties["GEOID"]==activeId) {
-  //     return activeCountyStyle(d)
-  //   } else if (neighborhood.includes(d.properties["GEOID"])) {
-  //     return neighborCountyStyle(d)
-  //   }
-  //   return inactiveCountyStyle(d)
-  // }
 
 
   // Mouse functions
@@ -208,7 +143,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     // Create a neighborhood of equivalent population
     const geoid = e.target.getAttribute('data-geoid')
     setNeighborhoodSeed(geoid)
-    // setNeighborhood(buildNeighborhood([geoid], pop))
   } 
 
   const onRightClick = (e)=>{
@@ -264,7 +198,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
                 ? "neighbor"
                 : "inactive"
             }
-            // style={selectStyle(feature)}
             key={"ID" + feature.properties["GEOID"]} 
             id={"ID" + feature.properties["GEOID"]}
             geoid={feature.properties["GEOID"]}
@@ -295,7 +228,6 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
             feature={feature} 
             type={"state"}
             status={"state"}
-            style={stateStyle} 
             key={"ID" + feature.properties["STATEFP"]}
             id={"ID" + feature.properties["STATEFP"]} 
             valuemap={valuemap}
