@@ -66,6 +66,7 @@ function App() {
           setPop={setPop}
           setLocation={setLocation}
           setTooltipData={setTooltipData}
+          setActiveCounty={setActiveCounty}
         /> }
     </div>
   )

@@ -2,17 +2,14 @@ import * as d3 from "d3";
 
 const Path = ({ 
   feature, pop, geoid, id, 
+  geoGenerator, 
   type, status, valuemap,
   onClick, onRightClick, onMouseEnter, onMouseLeave
 }) => {
   
-  const projection = d3.geoAlbersUsa()
-  const geoGenerator = d3.geoPath()
-    .projection(projection)
-
-  // const attributes = Object.entries(feature.properties).reduce((acc, [key, val])=>{
-  //   return {...acc, ["data-" + key.toLowerCase()] : val}
-  // }, {})
+  // const projection = d3.geoAlbersUsa()
+  // const geoGenerator = d3.geoPath()
+  //   .projection(projection)
 
   // Color Scales
   const neighborColor = d3.scaleQuantize([1,10], d3.schemeBlues[9])
@@ -49,7 +46,11 @@ const Path = ({
     }}
   }
 
-  console.log(status, type, styles[type][status])
+  const properties = JSON.stringify({...feature.properties, POPESTIMATE2022: pop ? pop : null })
+  // const attributes = Object.entries(feature.properties).reduce((acc, [key, val])=>{
+  //   return {...acc, ["data-" + key.toLowerCase()] : val}
+  // }, {})
+
   return (  
     <path 
         d={geoGenerator(feature)}
@@ -58,8 +59,7 @@ const Path = ({
         id={id}
         data-pop={pop}
         data-geoid={geoid}
-        // {...attributes}
-        data-properties={JSON.stringify(feature.properties)}
+        data-properties={properties}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         onContextMenu={onRightClick}

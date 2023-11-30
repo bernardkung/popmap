@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import Path from './Path'
 
 
-const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLocation, setTooltipData }) => {
+const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLocation, setTooltipData, setActiveCounty }) => {
 // Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
 
 
@@ -151,25 +151,29 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
     const pop = e.target.getAttribute('data-pop')
     const countyName = counties.features.filter(c=>c.properties.GEOID==geoid)[0].properties.NAMELSAD
     // If Active County already exists
+    
+    console.log(e.target.getAttribute("data-properties"))
+
     if (geoid == activeId) {
       // Clear Active County
       setActiveId(null)
+      setActiveCounty(null)
       setLocation(null)
       setPop(0)  
-    // Clear Neighborhood
+      
 
     } else {
       // Set a new Active County
       setActiveId(geoid)
+      setActiveCounty(e.target.getAttribute("data-properties"))
       setLocation(`${countyName} (${geoid})`)
       setPop(parseInt(pop))
-      // Re-calculate neighborhood if a neighborhood already exists
     }
   }
   
   const onMouseEnter = (e)=>{
     const properties = JSON.parse(e.target.getAttribute("data-properties"))
-    console.log(e.target.getBBox())
+    // console.log(e.target.getBBox())
     setTooltipData({
       "properties":properties,
       "box":e.target.getBBox(),
@@ -190,7 +194,8 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
         {/* Counties */}
         {counties.features.map(feature=>(
           <Path 
-            feature={feature} 
+            feature={feature}
+            geoGenerator={geoGenerator} 
             type={"county"}
             status={ activeId==feature.properties['GEOID'] 
               ? "active" 
@@ -226,6 +231,7 @@ const Geopleth = ({ topodata, countydata, statedata, popdata, pop, setPop, setLo
         {states.features.map(feature=>(
           <Path 
             feature={feature} 
+            geoGenerator={geoGenerator} 
             type={"state"}
             status={"state"}
             key={"ID" + feature.properties["STATEFP"]}
