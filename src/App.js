@@ -65,6 +65,7 @@ function App() {
           activeCounty={activeCounty}
           neighborhood={neighborhood}
           countydata={countydata}
+          popdata={popdata}
         />
 
         { !loading && <Geopleth 

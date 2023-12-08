@@ -212,18 +212,6 @@ const Geopleth = ({
           />
         ))}
 
-        {/* Neighborhood mesh */}
-        <path 
-          d={geoGenerator(neighborMesh)}
-          style={{
-              fill: "none",
-              stroke: "#00EDFF",
-              strokeLinejoin:"round",
-              strokeWidth:"2",
-            }}
-          id={"mesh"}
-        />    
-
         {/* States */}
         {states.features.map(feature=>(
           <Path 
@@ -236,6 +224,18 @@ const Geopleth = ({
             valuemap={valuemap}
           />
         ))}
+
+        {/* Neighborhood mesh */}
+        <path 
+          d={geoGenerator(neighborMesh)}
+          style={{
+              fill: "none",
+              stroke: "#00EDFF",
+              strokeLinejoin:"round",
+              strokeWidth:"2",
+            }}
+          id={"mesh"}
+        />    
       </svg>
   </div>
   )

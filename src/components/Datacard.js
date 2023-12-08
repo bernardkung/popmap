@@ -2,12 +2,13 @@
 import { useState, useEffect } from "react"
 import Dataslot from "./Dataslot"
 
-const Datacard = ({ activeCounty, neighborhood, countydata }) => {
+const Datacard = ({ activeCounty, neighborhood, countydata, popdata }) => {
 
   const [ activeLoaded, setActiveLoaded ] = useState(false)
   const [ neighborhoodLoaded, setNeighborhoodLoaded ] = useState(false)
+  const [ popLoaded, setPoploaded ] = useState(false)
   const [ countyProperties, setCountyProperties ] = useState()
-  // const [ activeData, setActiveData ] = useState()
+  const [ popdict, setPopdict ] = useState()
   const [ activeData, setActiveData ] = useState({
     NAMELSAD: null,
     STATE_NAME: null,
@@ -43,7 +44,16 @@ const Datacard = ({ activeCounty, neighborhood, countydata }) => {
       setCountyProperties(countydata.objects.counties.geometries.map(c=>c.properties))
     }
   }, [ countydata ])
-
+  
+  // Once population data loads in
+  useEffect(()=>{
+    if (popdata) {
+      setPopdict(
+        popdata.reduce((dict, p) => (dict[p.STATE + p.COUNTY] = p, dict), {})
+      )
+      setPoploaded(true)
+    }
+  }, [ popdata ])
 
   // Active Data Infrastructure
   useEffect(()=>{
@@ -68,17 +78,23 @@ const Datacard = ({ activeCounty, neighborhood, countydata }) => {
 
   // Neighbor Data Infrastructure
   useEffect(()=>{
-    if (neighborhoodLoaded) {
+    if (neighborhoodLoaded && popLoaded) {
       const nProperties = countyProperties.filter(c=>neighborhood.includes(c.GEOID))
       
       const nALand = nProperties.reduce((acc, neighbor) => acc + parseInt(neighbor.ALAND), 0)
       const nAWater = nProperties.reduce((acc, neighbor) => acc + parseInt(neighbor.AWATER), 0)
       const nATotal = ( nALand + nAWater ) * mToMi
-      
-      setNeighborData({ nALand, nAWater, nATotal })
+
+      const nPop = neighborhood
+        .map(n => popdict[n].POPESTIMATE2022)
+        .reduce((acc, val)=>acc + parseInt(val), 0)
+      const nDensity = nPop/nATotal
+
+      setNeighborData({ nALand, nAWater, nATotal, nPop, nDensity })
 
     }
   }, [neighborhood])
+
 
 
   return (
@@ -111,9 +127,19 @@ const Datacard = ({ activeCounty, neighborhood, countydata }) => {
       <span className="countyName">Equivalent</span>
       <hr className="subhr"/>
       <Dataslot 
+        id="neighborhoodPopulation"
+        value={ prettify(neighborData.nPop) }
+        label="population"
+      />
+      <Dataslot 
         id="neighborhoodArea"
         value={ prettify(neighborData.nATotal) }
         label="area (mi²)"
+      />
+      <Dataslot 
+        id="neighborhoodDensity"
+        value={ prettify(neighborData.nDensity) }
+        label="density (people/mi²)"
       />
 
     </div>
