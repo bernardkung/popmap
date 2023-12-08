@@ -88,7 +88,7 @@ const Datacard = ({ activeCounty, neighborhood, countydata }) => {
       
       {/* <span className="geoid">({ data.GEOID })</span> */}
 
-      <hr />
+      <hr className="subhr" />
       
 
       <Dataslot 
@@ -106,8 +106,10 @@ const Datacard = ({ activeCounty, neighborhood, countydata }) => {
         value={ prettify(activeData.density, 1) }
         label="density (people/mi²)"
       />
-      <hr />
+      <hr className="mainhr" />
 
+      <span className="countyName">Equivalent</span>
+      <hr className="subhr"/>
       <Dataslot 
         id="neighborhoodArea"
         value={ prettify(neighborData.nATotal) }
