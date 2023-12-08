@@ -8,6 +8,7 @@ import Path from './Path'
 const Geopleth = ({ 
   topodata, countydata, statedata, popdata, pop, setPop, 
   setLocation, setTooltipData, setActiveCounty, setNeighbors,
+  neighborhood, setNeighborhood,
 }) => {
 // Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
 
@@ -20,7 +21,7 @@ const Geopleth = ({
   // Dynamic dimensions
   // const [viewsize, setViewsize] = useState([window.innerWidth, window.innerHeight])
   const [activeId, setActiveId] = useState()
-  const [neighborhood, setNeighborhood] = useState([])
+  // const [neighborhood, setNeighborhood] = useState([])
   const [neighborhoodSeed, setNeighborhoodSeed] = useState()
   const [neighborMesh, setNeighborMesh] = useState()
 
@@ -111,6 +112,7 @@ const Geopleth = ({
   useEffect(()=>{
     if (neighborhoodSeed) {
       setNeighborhood(buildNeighborhood([neighborhoodSeed], pop))
+      // Set app neighbors
     }
   }, [neighborhoodSeed, activeId])
   
@@ -147,8 +149,6 @@ const Geopleth = ({
     const pop = e.target.getAttribute('data-pop')
     const countyName = counties.features.filter(c=>c.properties.GEOID==geoid)[0].properties.NAMELSAD
     // If Active County already exists
-    
-    console.log(e.target.getAttribute("data-properties"))
 
     if (geoid == activeId) {
       // Clear Active County

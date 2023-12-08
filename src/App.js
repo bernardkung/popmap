@@ -18,7 +18,9 @@ function App() {
   
   const [tooltipData, setTooltipData] = useState()
   const [activeCounty, setActiveCounty] = useState()
-  const [neighbors, setNeighbors] = useState([])
+  // const [neighbors, setNeighbors] = useState([])
+  const [neighborhood, setNeighborhood] = useState([])
+  const [neighborhoodSeed, setNeighborhoodSeed] = useState()
 
   
   // Set the dimensions and margins of the graph
@@ -46,14 +48,6 @@ function App() {
     return () => undefined
   }, [])
 
-  useEffect(()=>{
-    console.log(neighbors.length, neighbors)
-    if (neighbors.length!=0) {
-      console.log("recalc neighs", neighbors)
-
-    }
-  },[neighbors])
-  
 
   return (
     <div class="container">
@@ -69,7 +63,8 @@ function App() {
 
         <Datacard 
           activeCounty={activeCounty}
-          neighbors={neighbors}
+          neighborhood={neighborhood}
+          countydata={countydata}
         />
 
         { !loading && <Geopleth 
@@ -80,9 +75,10 @@ function App() {
             pop={pop}
             setPop={setPop}
             setLocation={setLocation}
-            setTooltipData={setTooltipData}
             setActiveCounty={setActiveCounty}
-            setNeighbors={setNeighbors}
+            neighborhood={neighborhood}
+            setNeighborhood={setNeighborhood}
+            setTooltipData={setTooltipData}
           /> }
 
       </div>

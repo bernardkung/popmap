@@ -43,3 +43,7 @@ Need to do some reading.
 Also want to add in more fleshed out interactions when setting active/neighborhood:
 If the active county is cleared, the neighborhood should be cleared.
 (tbd)
+
+
+I think it makes sense to consider restructuring from this topojson
+A dict of counties with GeoID as key would simplify a lot.
