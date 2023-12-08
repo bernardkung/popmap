@@ -46,6 +46,13 @@ function App() {
     return () => undefined
   }, [])
 
+  useEffect(()=>{
+    console.log(neighbors.length, neighbors)
+    if (neighbors.length!=0) {
+      console.log("recalc neighs", neighbors)
+
+    }
+  },[neighbors])
   
 
   return (
@@ -62,6 +69,7 @@ function App() {
 
         <Datacard 
           activeCounty={activeCounty}
+          neighbors={neighbors}
         />
 
         { !loading && <Geopleth 

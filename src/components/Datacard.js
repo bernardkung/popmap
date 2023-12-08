@@ -1,11 +1,11 @@
 import { active } from "d3"
+import { neighbors } from "topojson-client"
 
-const Datacard = ({ activeCounty }) => {
+const Datacard = ({ activeCounty, neighbors }) => {
 
   if (!activeCounty) {return null}
   const data = JSON.parse(activeCounty)
-  // console.log("<>", data, activeCounty["NAMELSAD"])
-  // console.log(parseInt(data.POPESTIMATE2022).toLocaleString('en-US'))
+  
   const pop = parseInt(data.POPESTIMATE2022)
   const landArea = parseInt(data.ALAND) * 0.0000003861
   const waterArea = parseInt(data.AWATER) * 0.0000003861
@@ -16,7 +16,7 @@ const Datacard = ({ activeCounty }) => {
       <span className="countyName">{ data.NAMELSAD }</span>
       <span className="stateName">{ data.STATE_NAME }</span>
       
-      <span className="geoid">({ data.GEOID })</span>
+      {/* <span className="geoid">({ data.GEOID })</span> */}
 
       <hr />
       
