@@ -116,7 +116,7 @@ const Geopleth = ({
   
   // Define the outer mesh of the neighboorhood
   useEffect(()=>{
-    console.log("neighborhood", neighborhood)
+    // console.log("neighborhood", neighborhood)
     const mesh = topojson.mesh(
       countydata, countydata.objects.counties, 
       (a, b) => {
@@ -148,7 +148,7 @@ const Geopleth = ({
     const countyName = counties.features.filter(c=>c.properties.GEOID==geoid)[0].properties.NAMELSAD
     // If Active County already exists
     
-    console.log(countydata)
+    console.log(e.target.getAttribute("data-properties"))
 
     if (geoid == activeId) {
       // Clear Active County
@@ -164,6 +164,7 @@ const Geopleth = ({
       setActiveCounty(e.target.getAttribute("data-properties"))
       setLocation(`${countyName} (${geoid})`)
       setPop(parseInt(pop))
+      // Neighborhood will automatically retrigger based on activeId change
     }
   }
   

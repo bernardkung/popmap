@@ -32,3 +32,14 @@ Alaska throws a race condition if the population is greater than all of Alaska
 Can I split all "active" and "neighbor" features into their own separate topojson?
 
 can I style only the outside borders of the "neighbor" features?
+
+
+
+Have sub-county data, but I need to do some reading. 
+There's a lot of different types of sub-county divisions 
+it's usually towns/cities, but there's others
+Need to do some reading.
+
+Also want to add in more fleshed out interactions when setting active/neighborhood:
+If the active county is cleared, the neighborhood should be cleared.
+(tbd)
