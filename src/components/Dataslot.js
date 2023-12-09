@@ -1,12 +1,12 @@
 
-const Dataslot = ({ id, value, label }) => {
+const Dataslot = ({ id, type, value, label }) => {
   if (!id) {
     return null
   }
   return (
-    <div className="dataslot" id={ id }>
-      <p className="value">{ value }</p>
-      <p className="label"> { label }</p>
+    <div className={"dataslot " + type} id={ id }>
+      <p className={"value " + type}>{ value }</p>
+      <p className={"label " + type}> { label }</p>
     </div>
   )
 }

@@ -99,48 +99,60 @@ const Datacard = ({ activeCounty, neighborhood, countydata, popdata }) => {
 
   return (
     <div className="datacard">
-      <span className="countyName">{ activeData.NAMELSAD}</span>
-      <span className="stateName">{ activeData.STATE_NAME }</span>
+      <div className="active half">
+
+        <span className="mainlabel active">{ activeData.NAMELSAD}</span>
+        <span className="sublabel active">{ activeData.STATE_NAME }</span>
+        {/* <span className="geoid">({ data.GEOID })</span> */}
+
+        <hr className="subhr" />
       
-      {/* <span className="geoid">({ data.GEOID })</span> */}
+        <Dataslot 
+          type="active"
+          id="population"
+          value={ prettify(activeData.pop) }
+          label="population"
+        />
+        <Dataslot 
+          id="area"
+          type="active"
+          value={ prettify(activeData.totalArea) }
+          label="land (mi²)"
+        />
+        <Dataslot 
+          id="density"
+          type="active"
+          value={ prettify(activeData.density, 1) }
+          label="density (people/mi²)"
+        />
 
-      <hr className="subhr" />
+      </div>
       
+      <div className="neighbor half">
 
-      <Dataslot 
-        id="population"
-        value={ prettify(activeData.pop) }
-        label="population"
-      />
-      <Dataslot 
-        id="area"
-        value={ prettify(activeData.totalArea) }
-        label="land (mi²)"
-      />
-      <Dataslot 
-        id="density"
-        value={ prettify(activeData.density, 1) }
-        label="density (people/mi²)"
-      />
-      <hr className="mainhr" />
+        <span className="mainlabel neighbor">Equivalent</span>
+        <span className="sublabel neighbor">Counties</span>
+        <hr className="subhr"/>
+        <Dataslot 
+          id="neighborhoodPopulation"
+          type="neighbor"
+          value={ prettify(neighborData.nPop) }
+          label="population"
+        />
+        <Dataslot 
+          id="neighborhoodArea"
+          type="neighbor"
+          value={ prettify(neighborData.nATotal) }
+          label="area (mi²)"
+        />
+        <Dataslot 
+          id="neighborhoodDensity"
+          type="neighbor"
+          value={ prettify(neighborData.nDensity) }
+          label="density (people/mi²)"
+        />
 
-      <span className="countyName">Equivalent</span>
-      <hr className="subhr"/>
-      <Dataslot 
-        id="neighborhoodPopulation"
-        value={ prettify(neighborData.nPop) }
-        label="population"
-      />
-      <Dataslot 
-        id="neighborhoodArea"
-        value={ prettify(neighborData.nATotal) }
-        label="area (mi²)"
-      />
-      <Dataslot 
-        id="neighborhoodDensity"
-        value={ prettify(neighborData.nDensity) }
-        label="density (people/mi²)"
-      />
+      </div>
 
     </div>
   )

@@ -41,65 +41,108 @@
 /* DATACARD */
 .datacard {
   display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.datacard .active.half {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-end;
+  margin: 5px;
+}
+
+.datacard .neighbor.half {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin: 5px;
+}
+
+/* .datacard .geoid {
+  font-size: 16px;
+  font-style: italic;
+} */
+
+.datacard .mainlabel {
+  font-size: 32px;
+  font-weight: 600;
+  color: #f5f5f5;
+}
+
+.datacard .sublabel.active {
+  font-size: 20px;
+  /* font-style: italic; */
+  font-weight: 600;
+  color: #FFC5FC;
+}
+
+.datacard .dataslot.active {
+  display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
   align-items: flex-end;
 }
 
-.datacard > .geoid {
-  font-size: 16px;
-  /* font-style: italic; */
-}
-
-.datacard > .countyName {
+.datacard .dataslot > .value.active {
   font-size: 32px;
+  /* font-style: italic; */
   font-weight: 600;
+  margin: 0;
+  color: #FFC5FC;
 }
 
-.datacard > .stateName {
+.datacard .dataslot > .label.active {
+  font-size: 14px;
+  /* font-style: italic; */
+  font-weight: 600;
+  margin: 0;
+  color: #ffc5fcad;
+}
+
+.datacard .sublabel.neighbor {
   font-size: 20px;
   /* font-style: italic; */
   font-weight: 600;
+  color: #a0e3e7;
 }
 
-.datacard > .stateName {
-  font-size: 20px;
-  font-style: italic;
+.datacard .dataslot.neighbor {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.datacard .dataslot > .value.neighbor {
+  font-size: 32px;
+  /* font-style: italic; */
   font-weight: 600;
+  margin: 0;
+  color: #a0e3e7;
 }
 
-.datacard > .mainhr {
+.datacard .dataslot > .label.neighbor {
+  font-size: 14px;
+  /* font-style: italic; */
+  font-weight: 600;
+  margin: 0;
+  color: #a0e3e79d;
+}
+
+.datacard .mainhr {
   width: 95%;
   margin: 20px 0 10px 0;
   border-color: #f5f5f5;
 }
 
-.datacard > .subhr {
+.datacard .subhr {
   width: 75%;
   margin: 10px 0 10px 0;
-  border-color: #f5f5f5a9;
-}
-
-.datacard > .dataslot {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-  align-items: end;
-}
-
-.datacard > .dataslot > .value {
-  font-size: 32px;
-  /* font-style: italic; */
-  font-weight: 600;
-  margin: 0;
-}
-
-.datacard > .dataslot > .label {
-  font-size: 14px;
-  /* font-style: italic; */
-  color: #ffffffc0;
-  font-weight: 600;
-  margin: 0;
+  border-color: #f5f5f5;
 }
 
 /* TOOLTIP  */
