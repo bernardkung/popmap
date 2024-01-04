@@ -67,7 +67,9 @@
   font-style: italic;
 } */
 
-.datacard .mainlabel {
+.datacard .mainlabel.active {
+  height: 40px;
+  margin: 5px 5px 7px 0;
   font-size: 32px;
   font-weight: 600;
   color: #f5f5f5;
@@ -75,9 +77,9 @@
 
 .datacard .sublabel.active {
   font-size: 20px;
-  /* font-style: italic; */
+  font-style: italic;
   font-weight: 600;
-  color: #FFC5FC;
+  color: #b4b4b4;
 }
 
 .datacard .dataslot.active {
@@ -97,15 +99,22 @@
 
 .datacard .dataslot > .label.active {
   font-size: 14px;
-  /* font-style: italic; */
   font-weight: 600;
   margin: 0;
   color: #ffc5fcad;
 }
 
+.datacard .mainlabel.neighbor {
+  height: 40px;
+  margin: 5px 5px 7px 0;
+  font-size: 32px;
+  font-weight: 600;
+  color: #f5f5f5;
+  font-style: italic;
+}
+
 .datacard .sublabel.neighbor {
   font-size: 20px;
-  /* font-style: italic; */
   font-weight: 600;
   color: #a0e3e7;
 }

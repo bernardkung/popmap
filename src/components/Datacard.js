@@ -102,7 +102,8 @@ const Datacard = ({ activeCounty, neighborhood, countydata, popdata }) => {
       <div className="active half">
 
         <span className="mainlabel active">{ activeData.NAMELSAD}</span>
-        <span className="sublabel active">{ activeData.STATE_NAME }</span>
+        <span className="sublabel active">Equivalent</span>
+
         {/* <span className="geoid">({ data.GEOID })</span> */}
 
         <hr className="subhr" />
@@ -130,8 +131,9 @@ const Datacard = ({ activeCounty, neighborhood, countydata, popdata }) => {
       
       <div className="neighbor half">
 
-        <span className="mainlabel neighbor">Equivalent</span>
-        <span className="sublabel neighbor">Counties</span>
+        <span className="mainlabel neighbor">{ activeData.STATE_NAME }</span>
+        <span className="sublabel neighbor">{neighborhood.length} Counties</span>
+
         <hr className="subhr"/>
         <Dataslot 
           id="neighborhoodPopulation"
