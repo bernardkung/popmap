@@ -2,6 +2,8 @@
   "name": "popmap",
   "version": "0.1.0",
   "private": true,
+  "homepage" : "http://bernardkung.github.io/popmap",
+  "proxy": "http://localhost:3000",
   "dependencies": {
     "@juggle/resize-observer": "^3.4.0",
     "@testing-library/jest-dom": "^5.17.0",
@@ -39,9 +41,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "homepage": {
-    "homepage" : "http://bernardkung.github.io/popmap"
   },
   "devDependencies": {
     "gh-pages": "^6.1.1"
