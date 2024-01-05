@@ -40,9 +40,6 @@
       "last 1 safari version"
     ]
   },
-  "homepage": {
-    "homepage" : "http://bernardkung.github.io/popmap"
-  },
   "devDependencies": {
     "gh-pages": "^6.1.1"
   }
