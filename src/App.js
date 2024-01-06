@@ -4,6 +4,7 @@ import Geopleth from './components/Geopleth'
 import Tooltip from './components/Tooltip'
 import Datacard from './components/Datacard'
 import InfoButton from './components/InfoButton'
+import InfoPanel from './components/InfoPanel'
 import { useState, useEffect } from 'react'
 
 function App() {
@@ -64,6 +65,12 @@ function App() {
         setShowInfo={setShowInfo}
       />
 
+      { showInfo ? 
+        <InfoPanel 
+          showInfo={showInfo}
+          setShowInfo={setShowInfo}
+        /> : null }
+      
       <Tooltip tooltipData={tooltipData} />
 
       <div className="main">
