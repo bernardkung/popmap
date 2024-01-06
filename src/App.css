@@ -32,6 +32,17 @@
   width: 100vw;
 }
 
+.flexCol {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.centerText {
+  text-align: center;
+}
+
 /* MAIN */
 .main {
   display: flex;

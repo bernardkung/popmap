@@ -9,7 +9,7 @@ const InfoPanel = ({ showInfo, setShowInfo })=>{
 
   return (
     <div 
-      className="infoPanel"
+      className="infoPanel flexCol centerText"
       onClick={handleClick}
     >
       <img 
@@ -19,7 +19,9 @@ const InfoPanel = ({ showInfo, setShowInfo })=>{
           : process.env.PUBLIC_URL + '/info-icon.svg'
         } 
       />
-      { infoText }
+      <p>Right click a county to select it.</p>
+      <p>Left click to build a group of counties with an equivalent population.</p>
+      <p color="#a7a7a7">Click anywhere to exit!</p>
     </div>
   )
 }
