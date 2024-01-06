@@ -8,7 +8,11 @@ const InfoButton = ({ showInfo, setShowInfo })=>{
   return (
     <div 
       onClick={handleClick}
-    >
+    >      
+      <img 
+        className="infoIcon"
+        src={process.env.PUBLIC_URL + '/info-icon.svg'} 
+      />
       info: { showInfo.toString() }
     </div>
   )

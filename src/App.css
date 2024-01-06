@@ -195,10 +195,16 @@
   margin-bottom: 10px;
 }
 
-/* INFO BUTTON */
+/* INFO */
+.infoIcon {
+  height: 40px;
+  width: 40px;
+}
 
+.infoIcon path {
+  fill: blue;
+}
 
-/* INFO PANEL */
 .infoPanel {
   position: absolute;
   opacity: 0.8;
