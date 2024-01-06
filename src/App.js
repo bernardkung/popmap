@@ -56,31 +56,9 @@ function App() {
   return (
     <div className="container">
 
-      {/* <div className="header">
-        <div id="location">{location}</div>
-        <div id="pop">{pop}</div>
-      </div> */}
-      <InfoButton 
-        showInfo={showInfo}
-        setShowInfo={setShowInfo}
-      />
+      <div className='containerTop'>
 
-      { showInfo ? 
-        <InfoPanel 
-          showInfo={showInfo}
-          setShowInfo={setShowInfo}
-        /> : null }
-      
-      <Tooltip tooltipData={tooltipData} />
-
-      <div className="main">
-
-        <Datacard 
-          activeCounty={activeCounty}
-          neighborhood={neighborhood}
-          countydata={countydata}
-          popdata={popdata}
-        />
+        <Tooltip tooltipData={tooltipData} />
 
         { !loading && <Geopleth 
             topodata={topodata} 
@@ -97,6 +75,31 @@ function App() {
           /> }
 
       </div>
+
+
+      <div className='containerBottom'>
+        
+        <InfoButton 
+          showInfo={showInfo}
+          setShowInfo={setShowInfo}
+        />
+        
+        { showInfo ? 
+          <InfoPanel 
+            showInfo={showInfo}
+            setShowInfo={setShowInfo}
+          /> : null }
+
+        <Datacard 
+          activeCounty={activeCounty}
+          neighborhood={neighborhood}
+          countydata={countydata}
+          popdata={popdata}
+        />
+
+
+      </div>
+
     </div>
   )
 }

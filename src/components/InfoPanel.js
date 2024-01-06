@@ -1,6 +1,4 @@
 
-// import closeIcon from '/info-close.svg'
-
 const InfoPanel = ({ showInfo, setShowInfo })=>{
   
   const handleClick = ()=>{
@@ -16,7 +14,10 @@ const InfoPanel = ({ showInfo, setShowInfo })=>{
     >
       <img 
       className={"closeIcon infoIcon"}
-        src={process.env.PUBLIC_URL + '/info-close.svg'} 
+        src={showInfo 
+          ? process.env.PUBLIC_URL + '/info-close.svg'
+          : process.env.PUBLIC_URL + '/info-icon.svg'
+        } 
       />
       { infoText }
     </div>

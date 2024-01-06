@@ -16,7 +16,7 @@ const Geopleth = ({
   // Set the dimensions and margins of the graph
   const margin = { top: 0, right: 60, bottom: 60, left: 160 }
   const width = 900
-  const height = 700
+  const height = 500
 
   // Dynamic dimensions
   // const [viewsize, setViewsize] = useState([window.innerWidth, window.innerHeight])
