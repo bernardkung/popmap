@@ -3,6 +3,7 @@ import * as d3 from "d3"
 import Geopleth from './components/Geopleth'
 import Tooltip from './components/Tooltip'
 import Datacard from './components/Datacard'
+import InfoButton from './components/InfoButton'
 import { useState, useEffect } from 'react'
 
 function App() {
@@ -11,7 +12,9 @@ function App() {
   const [countydata, setCountydata] = useState()
   const [statedata, setStatedata] = useState()
   const [popdata, setPopdata] = useState()
+
   const [loading, setLoading] = useState(true)
+  const [showInfo, setShowInfo] = useState(false)
 
   const [location, setLocation] = useState("none")
   const [pop, setPop] = useState(0)
@@ -50,16 +53,20 @@ function App() {
 
 
   return (
-    <div class="container">
+    <div className="container">
 
       {/* <div className="header">
         <div id="location">{location}</div>
         <div id="pop">{pop}</div>
       </div> */}
+      <InfoButton 
+        showInfo={showInfo}
+        setShowInfo={setShowInfo}
+      />
 
       <Tooltip tooltipData={tooltipData} />
 
-      <div class="main">
+      <div className="main">
 
         <Datacard 
           activeCounty={activeCounty}
