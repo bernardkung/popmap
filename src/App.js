@@ -52,6 +52,9 @@ function App() {
     return () => undefined
   }, [])
 
+  useEffect(()=>{
+    console.log(activeCounty)
+  }, [activeCounty])
 
   return (
     <div className="container">

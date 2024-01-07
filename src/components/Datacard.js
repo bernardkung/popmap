@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react"
 import Dataslot from "./Dataslot"
+import { active } from "d3"
 
 const Datacard = ({ activeCounty, neighborhood, countydata, popdata }) => {
 
@@ -55,13 +56,14 @@ const Datacard = ({ activeCounty, neighborhood, countydata, popdata }) => {
     }
   }, [ popdata ])
 
+
   // Active Data Infrastructure
   useEffect(()=>{
     if (activeLoaded) {
       const activeData = JSON.parse(activeCounty)
 
       const NAMELSAD = activeData.NAMELSAD
-      const STATE_NAME = activeData.STATE_NAME
+      const STATE_NAME = activeData.STATE_NAME ? activeData.STATE_NAME : "(none)"
       const GEOID = activeData.GEOID
       const pop = parseInt(activeData.POPESTIMATE2022)
       const landArea = parseInt(activeData.ALAND) * mToMi
@@ -101,8 +103,12 @@ const Datacard = ({ activeCounty, neighborhood, countydata, popdata }) => {
     <div className="datacard">
       <div className="active half">
 
-        <span className="mainlabel active">{ activeData.NAMELSAD}</span>
-        <span className="sublabel active">{ activeData.STATE_NAME }</span>
+        <span className="mainlabel active">
+          { activeData.NAMELSAD ? activeData.NAMELSAD : "(none)" }
+        </span>
+        <span className="sublabel active">
+          { activeData.STATE_NAME ? activeData.STATE_NAME : "(none)" }
+        </span>
 
         {/* <span className="geoid">({ data.GEOID })</span> */}
 
