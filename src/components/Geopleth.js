@@ -144,6 +144,7 @@ const Geopleth = ({
   } 
 
   const onRightClick = (e)=>{
+    console.log('right click')
     e.preventDefault()
     const geoid = e.target.getAttribute('data-geoid')
     const pop = e.target.getAttribute('data-pop')

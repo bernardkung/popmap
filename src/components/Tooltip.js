@@ -8,8 +8,8 @@ const Tooltip = ({tooltipData}) => {
 
   return (
     <div className="tooltip" style={{
-      left: tooltipData.box.x - 110,
-      top: tooltipData.box.y + 60,
+      left: tooltipData.box.x,
+      top: tooltipData.box.y,
     }}>
       {tooltipData.properties.GEOID} {tooltipData.properties.NAMELSAD}
     </div>
