@@ -36,7 +36,13 @@ const Geopleth = ({
   // Mapping function to crosswalk population and topojson
   const valuemap = new Map(popdata.map(p => [p.STATE + p.COUNTY, p.POPESTIMATE2022]));
 
-    
+  function getcontigs(geoids) {
+    return geoids.map(geoid => {
+      const index = neighbors[ids.indexOf(geoid)]
+      const result = index.map(i => ids[i])
+      return result
+    }).flat(Infinity)
+  }
 
   function getNeighbors(geoids) {
     const getcontigs = geoids => {
@@ -59,7 +65,7 @@ const Geopleth = ({
       .filter(d => !geoids.includes(d.properties.GEOID))
       .sort((a, b)=>{
         const aPop = parseInt(valuemap.get(a.properties.GEOID))
-        const bPop = parseInt(valuemap.get(b.properties.GEOID)) 
+        const bPop = parseInt(valuemap.get(b.properties.GEOID))
         return aPop < bPop ? -1 : aPop > bPop ? 1 : 0
       })
     
