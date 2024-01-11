@@ -52,17 +52,10 @@ function App() {
     return () => undefined
   }, [])
 
-  useEffect(()=>{
-    console.log(activeCounty)
-  }, [activeCounty])
-
   return (
     <div className="container">
 
       <div className='containerTop'>
-
-        <Tooltip tooltipData={tooltipData} />
-
         { !loading && <Geopleth 
             topodata={topodata} 
             countydata={countydata} 
@@ -77,6 +70,7 @@ function App() {
             setTooltipData={setTooltipData}
           /> }
 
+        <Tooltip tooltipData={tooltipData} />
       </div>
 
 

@@ -35,7 +35,6 @@ const Datacard = ({ activeCounty, neighborhood, countydata, popdata }) => {
 
   // Check if data is loaded
   useEffect(()=>{
-    console.log(activeCounty)
     if (activeCounty) {setActiveLoaded(true)}
     if (neighborhood.length > 0) {setNeighborhoodLoaded(true)}
   }, [activeCounty, neighborhood])

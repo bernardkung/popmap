@@ -5,13 +5,14 @@ const Tooltip = ({tooltipData}) => {
   // console.log(tooltipData.properties)
   // const [ xPos, yPos, width, height ] = tooltipData.box
   // console.log("X", tooltipData.box.x - 160)
+  // console.log(tooltipData)
 
   return (
     <div className="tooltip" style={{
-      left: tooltipData.box.x,
-      top: tooltipData.box.y,
+      left: tooltipData.box.left,
+      top: tooltipData.box.top,
     }}>
-      {tooltipData.properties.GEOID} {tooltipData.properties.NAMELSAD}
+      <strong>{tooltipData.properties.NAMELSAD}</strong><br />({tooltipData.properties.GEOID})
     </div>
   )
 }

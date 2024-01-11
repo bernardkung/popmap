@@ -47,6 +47,7 @@ const Path = ({
   return (  
     <path 
         d={geoGenerator(feature)}
+        className={ `${type} ${status}` }
         style={styles[type][status]}
         onClick={onClick}
         id={id}

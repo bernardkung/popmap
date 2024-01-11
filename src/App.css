@@ -64,6 +64,32 @@
   padding: 20px 0 20px 0;
 }
 
+.state {
+  fill: "none";
+  stroke: "black";
+  stroke-linejoin:"round";
+  stroke-width:"0.55";
+}
+
+.active {
+  fill: "#FFC5FC";
+  stroke: "#FF2EF8";
+  stroke-linejoin:"round";
+  stroke-width:"2";
+}
+
+.neighbor {
+  stroke: "#25B0BB";
+  stroke-linejoin:"round";
+  stroke-width:"0.55";
+}
+
+.inactive {
+  stroke: "black";
+  stroke-linejoin:"round";
+  stroke-width:"0.15";
+}
+
 /* DATACARD */
 .datacard {
   display: flex;
@@ -180,20 +206,25 @@
   border-color: #f5f5f5;
 }
 
+.dot {
+  position: absolute;
+}
+
 /* TOOLTIP  */
 .tooltip {
-  width: 356px;
-  background: #fff;
-  color: #333338;
-  border: 1px solid #f5f5f5;
+  /* width: 356px; */
+  background: #333338c5;
+  color: #f5f5f5;
+  border-radius: 5px;
+  /* border: 1px solid #f5f5f5; */
   box-shadow: 3px 3px 3px rgb(0 0 0 / 10%);
   font-size: 11px;
-  max-width: 200px;
+  /* max-width: 200px; */
   padding: 10px;
   position: absolute;
-
-  margin-left: 35px;
-  transform: translateY(-50%);
+  margin: 0;
+  transform: translate(-50%, -120%);
+  text-align: center;
 }
 
 .title {

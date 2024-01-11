@@ -144,7 +144,6 @@ const Geopleth = ({
   } 
 
   const onRightClick = (e)=>{
-    console.log('right click')
     e.preventDefault()
     const geoid = e.target.getAttribute('data-geoid')
     const pop = e.target.getAttribute('data-pop')
@@ -171,10 +170,16 @@ const Geopleth = ({
   
   const onMouseEnter = (e)=>{
     const properties = JSON.parse(e.target.getAttribute("data-properties"))
-    // console.log(e.target.getBBox())
+    // console.log("bbox", e.target.getBBox())
+    // console.log("rect", e.target.getBoundingClientRect())
+    // console.log(e.pageX, e.pageY)
     setTooltipData({
       "properties":properties,
-      "box":e.target.getBBox(),
+      "box":e.target.getBoundingClientRect(),
+      "dot":{
+        "x":e.pageX, 
+        "y":e.pageY
+      }
     })
   }
 
@@ -186,7 +191,9 @@ const Geopleth = ({
     <div>
       {/* Tooltip */}
 
-      <svg id="choropleth" style = {{ width: width, height:height }}>
+      <svg id="choropleth" 
+        style = {{ width: width, height:height }} 
+      >
 
 
         {/* Counties */}
