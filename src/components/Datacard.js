@@ -59,7 +59,7 @@ const Datacard = ({ activeCounty, neighborhood, countydata, popdata }) => {
 
   // Active Data Infrastructure
   useEffect(()=>{
-    if (activeLoaded) {
+    if (activeCounty) {
       const activeData = JSON.parse(activeCounty)
 
       const NAMELSAD = activeData.NAMELSAD

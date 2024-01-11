@@ -151,6 +151,7 @@ const Geopleth = ({
   } 
 
   const onRightClick = (e)=>{
+    // Set a new Active County
     e.preventDefault()
     const geoid = e.target.getAttribute('data-geoid')
     const pop = e.target.getAttribute('data-pop')
