@@ -65,26 +65,32 @@ const Geopleth = ({
     
     // Get populations for each neighboring feature
     const neighborhoodPop = neighborhood
-        .map(d=>[d.properties.GEOID, valuemap.get(d.properties.GEOID)])
+        .map(d=>{return {"geoid":d.properties.GEOID, "pop":valuemap.get(d.properties.GEOID)}})
     
     // Reduce each neighboring feature to geoid
     const neighborhoodIds = neighborhood.map(d=>d.properties.GEOID)
-    
+    console.log(neighborhoodPop)
     return neighborhoodIds
   }
 
   function checkNeighbors(geoids, neighborGeoids, targetPop, totalPop) {
     // Loop through each neighbor and check if target pop has been reached
+
+    console.log(`Checking ${neighborGeoids.length} neighbors:`, neighborGeoids)
+
     for (let i = 0; i < neighborGeoids.length; i++) {
       const geoid = neighborGeoids[i]
       const countyPop = parseInt(valuemap.get(geoid))
+
+      console.log(`${geoid}// total:${totalPop} + pop:${countyPop} ; target:${targetPop}`)
+      console.log(`check:${countyPop + parseInt(totalPop) > parseInt(targetPop)}`)
 
       // Exit case: target pop exceeded
       if (countyPop + parseInt(totalPop) > parseInt(targetPop)) {
         return geoids
       } else {
         // Add the neighbor to array of geoids and increase the population
-        totalPop += parseInt(countyPop)
+        totalPop = parseInt(totalPop) + parseInt(countyPop)
         geoids.push(geoid)
       }
     }
@@ -103,8 +109,9 @@ const Geopleth = ({
   function buildNeighborhood(geoids, targetPop) {
     // Get unique neighboring geoids, sorted by population
     const neighborGeoids = getNeighbors(geoids)
-
-    return checkNeighbors(geoids, neighborGeoids, targetPop, 0)
+    // Get initial seed population
+    const initPop = valuemap.get(geoids[0])
+    return checkNeighbors(geoids, neighborGeoids, targetPop, initPop)
   }
 
 
@@ -149,7 +156,6 @@ const Geopleth = ({
     const pop = e.target.getAttribute('data-pop')
     const countyName = counties.features.filter(c=>c.properties.GEOID==geoid)[0].properties.NAMELSAD
     // If Active County already exists
-
     if (geoid == activeId) {
       // Clear Active County
       setActiveId(null)
