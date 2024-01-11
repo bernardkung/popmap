@@ -66,24 +66,24 @@ const Geopleth = ({
     // Get populations for each neighboring feature
     const neighborhoodPop = neighborhood
         .map(d=>{return {"geoid":d.properties.GEOID, "pop":valuemap.get(d.properties.GEOID)}})
+    // console.log(neighborhoodPop)
     
     // Reduce each neighboring feature to geoid
     const neighborhoodIds = neighborhood.map(d=>d.properties.GEOID)
-    console.log(neighborhoodPop)
     return neighborhoodIds
   }
 
   function checkNeighbors(geoids, neighborGeoids, targetPop, totalPop) {
     // Loop through each neighbor and check if target pop has been reached
 
-    console.log(`Checking ${neighborGeoids.length} neighbors:`, neighborGeoids)
+    // console.log(`Checking ${neighborGeoids.length} neighbors:`, neighborGeoids)
 
     for (let i = 0; i < neighborGeoids.length; i++) {
       const geoid = neighborGeoids[i]
       const countyPop = parseInt(valuemap.get(geoid))
 
-      console.log(`${geoid}// total:${totalPop} + pop:${countyPop} ; target:${targetPop}`)
-      console.log(`check:${countyPop + parseInt(totalPop) > parseInt(targetPop)}`)
+      // console.log(`${geoid}// total:${totalPop} + pop:${countyPop} ; target:${targetPop}`)
+      // console.log(`check:${countyPop + parseInt(totalPop) > parseInt(targetPop)}`)
 
       // Exit case: target pop exceeded
       if (countyPop + parseInt(totalPop) > parseInt(targetPop)) {
