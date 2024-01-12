@@ -80,10 +80,10 @@ const Geopleth = ({
   }
 
   function checkNeighbors(geoids, neighborGeoids, targetPop, totalPop) {
-    // Loop through each neighbor and check if target pop has been reached
+    // Loop through each neighbor
 
     // console.log(`Checking ${neighborGeoids.length} neighbors:`, neighborGeoids)
-
+    let added = 0
     for (let i = 0; i < neighborGeoids.length; i++) {
       const geoid = neighborGeoids[i]
       const countyPop = parseInt(valuemap.get(geoid))
@@ -91,13 +91,18 @@ const Geopleth = ({
       // console.log(`${geoid}// total:${totalPop} + pop:${countyPop} ; target:${targetPop}`)
       // console.log(`check:${countyPop + parseInt(totalPop) > parseInt(targetPop)}`)
 
-      // Exit case: target pop exceeded
+      // First Exit Condition: target pop exceeded
       if (countyPop + parseInt(totalPop) > parseInt(targetPop)) {
-        return geoids
+        // Second Exit Condition: no neighbors added
+        if (added == 0) {
+          return geoids
+        }
+        // Otherwise, try to get a new set of neighbors
       } else {
         // Add the neighbor to array of geoids and increase the population
         totalPop = parseInt(totalPop) + parseInt(countyPop)
         geoids.push(geoid)
+        added += 1
       }
     }
     // If all counties have been checked
