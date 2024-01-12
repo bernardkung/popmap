@@ -42,24 +42,10 @@ const Geopleth = ({
     }
   }) ))
 
-  // console.log('n', neighbors)
-  // console.log('ids', ids)
-  // console.log('cd', countiesData)
-  const testCounty = '23003'
-  const testCounties = ['23003', '23029']
-
-  function getNeighbors(geoids, countiesData) {
-    return geoids
-      .map(geoid => countiesData[geoid].neighbors)
-      .flat(Infinity)
-      .map(i=>ids[i])
-  }
-
-
   // Build a new neighborhood after a new seed is set
   useEffect(()=>{
     if (neighborhoodSeed) {
-      setNeighborhood(buildNeighborhood(neighborhoodSeed, pop, counties, countiesData, valuemap, ids, neighbors))
+      setNeighborhood(buildNeighborhood(neighborhoodSeed, pop, countiesData))
       // Set app neighbors
     }
   }, [neighborhoodSeed, activeId])

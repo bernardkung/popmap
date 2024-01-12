@@ -1,9 +1,4 @@
 
-// Input:
-// Seed: geoid, forms the core of a neighborhood
-// neighbors: list of neighbors of each geoid
-// Output:
-// Neighborhood: List of geoids
 
 function getNeighbors(geoids, countiesData, ascending=true) {
   const ids = Object.keys(countiesData)
@@ -23,9 +18,7 @@ function getNeighbors(geoids, countiesData, ascending=true) {
   return neighbors
 }
 
-function buildNeighborhood(
-  geoid, targetPop, counties, countiesData, valuemap, ids, neighbors
-) {
+function buildNeighborhood( geoid, targetPop, countiesData ) {
 
   function checkNeighbors(
     geoids, neighborGeoids, targetPop, totalPop, countiesData, iter) {
@@ -65,7 +58,7 @@ function buildNeighborhood(
   // Get unique neighboring geoids, sorted by population
   const neighborGeoids = getNeighbors([geoid], countiesData)
   // Get initial population of clicked county
-  const initPop = valuemap.get(geoid)
+  const initPop = countiesData[geoid].POPESTIMATE2022
   return checkNeighbors([geoid], neighborGeoids, targetPop, initPop, countiesData, 0)
 }
 
