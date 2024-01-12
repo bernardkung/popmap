@@ -12,7 +12,7 @@ const InfoButton = ({ showInfo, setShowInfo })=>{
     >      
       <img 
         className="infoIcon"
-        src={process.env.PUBLIC_URL + '/info-icon.svg'} 
+        src={process.env.PUBLIC_URL + '/how_to3.svg'} 
       />
 
     </div>
