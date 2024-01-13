@@ -10,7 +10,8 @@ import {
 const Geopleth = ({ 
   topodata, countydata, statedata, popdata, pop, setPop, 
   setLocation, setTooltipData, setActiveCounty, setNeighbors,
-  neighborhood, setNeighborhood,
+  neighborhood, setNeighborhood, 
+  algorithm,
 }) => {
 // Get React to render the svg and paths so that it's not contesting D3 for control of the DOM
 
@@ -46,13 +47,20 @@ const Geopleth = ({
 
   // Build a new neighborhood after a new seed is set
   useEffect(()=>{
-    if (neighborhoodSeed) {
-      // setNeighborhood(buildNeighborhood(neighborhoodSeed, pop, countiesData))
-      // setNeighborhood(buildSmallestNeighborhood(neighborhoodSeed, pop, countiesData))
-      setNeighborhood(buildLargestNeighborhood(neighborhoodSeed, pop, countiesData))
-      // Set app neighbors
+    const neighborhoodAlgorithm = {
+      basic: buildNeighborhood,
+      smallest: buildSmallestNeighborhood,
+      largest: buildLargestNeighborhood,
     }
-  }, [neighborhoodSeed, activeId])
+    
+    if (neighborhoodSeed) {
+      setNeighborhood(
+        neighborhoodAlgorithm[algorithm](
+          neighborhoodSeed, pop, countiesData
+        )
+      )
+    }
+  }, [neighborhoodSeed, activeId, algorithm])
   
   // Define the outer mesh of the neighboorhood
   useEffect(()=>{

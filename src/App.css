@@ -39,6 +39,13 @@
   align-items: center;
 }
 
+.flexRow {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
 .centerText {
   text-align: center;
 }
@@ -89,6 +96,17 @@
   stroke-linejoin:"round";
   stroke-width:"0.15";
 }
+
+/* MENU */
+.algorithmMenu {
+  font-size: 15px;
+}
+
+.algorithmOption {
+  margin: 0 3px 0 10px;
+  background-color: green;
+}
+
 
 /* DATACARD */
 .datacard {

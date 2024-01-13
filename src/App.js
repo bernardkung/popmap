@@ -5,6 +5,7 @@ import Tooltip from './components/Tooltip'
 import Datacard from './components/Datacard'
 import InfoButton from './components/InfoButton'
 import InfoPanel from './components/InfoPanel'
+import Menu from './components/Menu'
 import { useState, useEffect } from 'react'
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
 
   const [location, setLocation] = useState("none")
   const [pop, setPop] = useState(0)
+
+  const [algorithm, setAlgorithm] = useState("basic")
   
   const [tooltipData, setTooltipData] = useState()
   const [activeCounty, setActiveCounty] = useState()
@@ -68,6 +71,7 @@ function App() {
             neighborhood={neighborhood}
             setNeighborhood={setNeighborhood}
             setTooltipData={setTooltipData}
+            algorithm={algorithm}
           /> }
 
         <Tooltip tooltipData={tooltipData} />
@@ -76,6 +80,8 @@ function App() {
 
       <div className='containerBottom'>
         
+        <Menu algorithm={algorithm} setAlgorithm={setAlgorithm}/>
+
         <InfoButton 
           showInfo={showInfo}
           setShowInfo={setShowInfo}
