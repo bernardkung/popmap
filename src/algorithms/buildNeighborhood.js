@@ -1,3 +1,4 @@
+import { ascending } from "d3"
 
 
 function getNeighbors(geoids, countiesData, ascending=true) {
@@ -18,8 +19,7 @@ function getNeighbors(geoids, countiesData, ascending=true) {
   return neighbors
 }
 
-function buildNeighborhood( geoid, targetPop, countiesData ) {
-
+export function buildNeighborhood( geoid, targetPop, countiesData ) {
   function checkNeighbors(
     geoids, neighborGeoids, targetPop, totalPop, countiesData, iter) {
     // Loop through each neighbor
@@ -61,5 +61,73 @@ function buildNeighborhood( geoid, targetPop, countiesData ) {
   const initPop = countiesData[geoid].POPESTIMATE2022
   return checkNeighbors([geoid], neighborGeoids, targetPop, initPop, countiesData, 0)
 }
+
+
+export function buildSmallestNeighborhood( geoid, targetPop, countiesData ) {
+  function checkNeighbors(geoids, neighborGeoids, targetPop, totalPop, countiesData, iter) {
+    // Check largest neighbor
+    for (let i = 0; i < neighborGeoids.length; i++) {
+      const geoid = neighborGeoids[i]
+      const countyPop = parseInt(countiesData[geoid].POPESTIMATE2022)
+
+      // If a neighbor can be added
+      if ( countyPop + parseInt(totalPop) < parseInt(targetPop) ) {
+        // Add largest neighbor found
+        totalPop = parseInt(totalPop) + parseInt(countyPop)
+        geoids.push(geoid)
+            
+        // Generate a new set of neighbors
+        const newNeighbors = getNeighbors(geoids, countiesData, false)
+        // if there are no new neighbors, don't loop forever
+        if (newNeighbors.length==0) {
+          return geoids
+        } 
+        return checkNeighbors(geoids, newNeighbors, targetPop, totalPop, countiesData, iter+=1)
+      }
+    }
+
+    return geoids
+  }
+
+  // Get unique neighboring geoids, sorted by population
+  const neighborGeoids = getNeighbors([geoid], countiesData, false)
+  // Get initial population of clicked county
+  const initPop = countiesData[geoid].POPESTIMATE2022
+  return checkNeighbors([geoid], neighborGeoids, targetPop, initPop, countiesData, 0)
+}
+
+export function buildLargestNeighborhood( geoid, targetPop, countiesData ) {
+  function checkNeighbors(geoids, neighborGeoids, targetPop, totalPop, countiesData, iter) {
+    // Check largest neighbor
+    for (let i = 0; i < neighborGeoids.length; i++) {
+      const geoid = neighborGeoids[i]
+      const countyPop = parseInt(countiesData[geoid].POPESTIMATE2022)
+
+      // If a neighbor can be added
+      if ( countyPop + parseInt(totalPop) < parseInt(targetPop) ) {
+        // Add largest neighbor found
+        totalPop = parseInt(totalPop) + parseInt(countyPop)
+        geoids.push(geoid)
+            
+        // Generate a new set of neighbors
+        const newNeighbors = getNeighbors(geoids, countiesData, true)
+        // if there are no new neighbors, don't loop forever
+        if (newNeighbors.length==0) {
+          return geoids
+        } 
+        return checkNeighbors(geoids, newNeighbors, targetPop, totalPop, countiesData, iter+=1)
+      }
+    }
+
+    return geoids
+  }
+
+  // Get unique neighboring geoids, sorted by population
+  const neighborGeoids = getNeighbors([geoid], countiesData, true)
+  // Get initial population of clicked county
+  const initPop = countiesData[geoid].POPESTIMATE2022
+  return checkNeighbors([geoid], neighborGeoids, targetPop, initPop, countiesData, 0)
+}
+
 
 export default buildNeighborhood

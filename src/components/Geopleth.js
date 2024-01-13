@@ -3,7 +3,9 @@ import { render } from 'react-dom'
 import * as topojson from "topojson-client"
 import { useState, useEffect, useRef } from "react"
 import Path from './Path'
-import buildNeighborhood from "../algorithms/buildNeighborhood";
+import { 
+  buildNeighborhood, buildSmallestNeighborhood, buildLargestNeighborhood 
+} from "../algorithms/buildNeighborhood";
 
 const Geopleth = ({ 
   topodata, countydata, statedata, popdata, pop, setPop, 
@@ -45,7 +47,9 @@ const Geopleth = ({
   // Build a new neighborhood after a new seed is set
   useEffect(()=>{
     if (neighborhoodSeed) {
-      setNeighborhood(buildNeighborhood(neighborhoodSeed, pop, countiesData))
+      // setNeighborhood(buildNeighborhood(neighborhoodSeed, pop, countiesData))
+      // setNeighborhood(buildSmallestNeighborhood(neighborhoodSeed, pop, countiesData))
+      setNeighborhood(buildLargestNeighborhood(neighborhoodSeed, pop, countiesData))
       // Set app neighbors
     }
   }, [neighborhoodSeed, activeId])
