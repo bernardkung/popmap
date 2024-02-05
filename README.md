@@ -9,3 +9,13 @@ Right click to set an active county. Left click to select a county to start buil
 ## Data
 
 Data is sourced from the 2023 US census data.
+
+## Issues
+
+There's a county in Hawaii that's connected to an "invisible" county.
+
+Alaska and Hawaii need a connection to the continuous 48.
+
+Map needs zooming/movement.
+
+Elements don't respond to window size.
